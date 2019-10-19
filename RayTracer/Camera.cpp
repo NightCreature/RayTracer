@@ -35,6 +35,7 @@ void Camera::positionCamera(const Vector3& eye, const Vector3& lookat, const Vec
 {
     m_eye = eye;
     m_cameraForward = lookat - eye;
+    m_cameraForward.normalize();
     cross(m_cameraRight, up, m_cameraForward);
     m_cameraForward.normalize();
     m_cameraRight.normalize();

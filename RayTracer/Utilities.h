@@ -23,11 +23,11 @@ bool SaveImage(const std::string& fileName, std::vector<Vector4>& pixels, const 
     // convert from RGB F32 to BGR U8
     for (size_t counter = 0; counter < pixels.size(); ++counter)
     {
-        const Vector4& src = pixels[counter];
+        Vector4& src = pixels[counter];
         Color& dest = outPixels[counter];
 
         // apply gamma correction
-        Vector4 correctedPixel(pow(src.x(), 1.0 / 2.2), pow(src.y(), 1.0 / 2.2), pow(src.z(), 1.0 / 2.2), 1.0);
+        Vector4 correctedPixel(src);// pow(src.x(), 1.0 / 2.2), pow(src.y(), 1.0 / 2.2), pow(src.z(), 1.0 / 2.2), 1.0);
 
         // clamp and convert
         dest.r = uint8_t(math::clamp(correctedPixel.x() * 255.0, 0.0, 255.0));

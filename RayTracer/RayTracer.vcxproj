@@ -73,10 +73,14 @@
     <IncludePath>D:\SDK\RayTracer;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>D:\SDK\RayTracer;$(IncludePath)</IncludePath>
+    <IncludePath>D:\SDK\RayTracer;D:\SDK\Demo\SpaceSim\SpaceSim\Core;$(IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)bin\</OutDir>
+    <TargetName>$(ProjectName)D</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>D:\SDK\RayTracer;$(IncludePath)</IncludePath>
+    <IncludePath>D:\SDK\RayTracer;D:\SDK\Demo\SpaceSim\SpaceSim\Core;$(IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)bin\</OutDir>
+    <TargetName>$(ProjectName)R</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -133,6 +137,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Demo\SpaceSim\SpaceSim\Core\tinyxml2.cpp" />
     <ClCompile Include="..\Math\matrix33.cpp" />
     <ClCompile Include="..\Math\matrix44.cpp" />
     <ClCompile Include="..\Math\matrixmath.cpp" />
@@ -144,11 +149,13 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Ray.cpp" />
+    <ClCompile Include="RenderOptions.cpp" />
     <ClCompile Include="RenderOptions.h" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Shape.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Demo\SpaceSim\SpaceSim\Core\tinyxml2.h" />
     <ClInclude Include="..\Math\MathUtilityFunctions.h" />
     <ClInclude Include="..\Math\matrix33.h" />
     <ClInclude Include="..\Math\matrix44.h" />
@@ -163,6 +170,9 @@
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Shape.h" />
     <ClInclude Include="Utilities.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\bin\rendersettings.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

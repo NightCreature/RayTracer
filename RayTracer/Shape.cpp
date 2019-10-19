@@ -16,7 +16,7 @@ bool Sphere::Intersect(const Ray& ray, IntersectionInformation& info)
     {
         info.m_hitTimeAlongRay = -b - sqrt(discriminant) / (2.0 * a);
         info.m_hitPoint = ray.PointAtT(info.m_hitTimeAlongRay);
-        info.m_normal = (m_position - info.m_hitPoint);
+        info.m_normal = -(m_position - info.m_hitPoint);
         info.m_normal.normalize();
         
     }

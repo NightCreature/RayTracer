@@ -55,6 +55,14 @@ public:
 	static Vector4 yAxis() {return Vector4(0.0f, 1.0f, 0.0f, 1.0f);}
 	static Vector4 zAxis() {return Vector4(0.0f, 0.0f, 1.0f, 1.0f);}
 	static Vector4 wAxis() {return Vector4(0.0f, 0.0f, 0.0f, 1.0f);}
+
+    void abs()
+    {
+        m_x = m_x < 0.0 ? -m_x : m_x;
+        m_y = m_y < 0.0 ? -m_y : m_y;
+        m_z = m_z < 0.0 ? -m_z : m_z;
+        m_w = m_w < 0.0 ? -m_w : m_w;
+    }
 protected:
 private:
 	double m_x, m_y, m_z, m_w;

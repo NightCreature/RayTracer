@@ -1,26 +1,29 @@
 #pragma once
 
 #include "Camera.h"
-#include <cmath>
 
+#include <cmath>
+#include <filesystem>
 
 struct RenderOptions
 {
     RenderOptions() = default;
-    RenderOptions(const Camera& cam, size_t width, size_t height, double fov)
+    RenderOptions(const Camera& cam, double fov)
         : m_cam(cam)
-        , m_outputWidth(width)
-        , m_outputHeight(height)
-        , m_aspectRatio(width/height)
+        , m_aspectRatio(static_cast<double>(m_outputWidth) / static_cast<double>(m_outputHeight))
         , m_fov(fov)
         , m_tanFov(tan(fov/2))
     {}
 
+    void Deserialise(const std::filesystem::path& settingsFilePath);
+
     Camera m_cam;
 
-    size_t m_outputWidth = 255;
-    size_t m_outputHeight= 255;
-    size_t m_aspectRatio;
+    size_t m_outputWidth = 256;
+    size_t m_outputHeight= 256;
+    size_t m_numberOfSamples;
+    size_t m_numberOfBounces = 1;
+    double m_aspectRatio;
     double m_fov;
     double m_tanFov;
     double m_nearPlaneDistance = 0.1;

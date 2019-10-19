@@ -15,10 +15,10 @@ int main()
     scene.m_shapes.push_back(&sphere);
 
     Camera cam;
-    cam.positionCamera(Vector3(0.0, 0.0, -50.0), Vector3::zero(), Vector3::yAxis());
+    cam.positionCamera(Vector3(0.0, 0.0, 12.0), Vector3::zero(), Vector3::yAxis());
     
-    RenderOptions renderOptions(cam, 1024, 1024, math::gmPI / 4.0);
-    auto maxSampleCount = 10;
+    RenderOptions renderOptions(cam, math::gmPI / 4.0);
+    renderOptions.Deserialise("rendersettings.xml");
     renderOptions.m_usePathTracing = true;
 
     std::vector<Vector4> imagePixels;
@@ -29,7 +29,7 @@ int main()
         for (size_t y = 0; y < renderOptions.m_outputHeight; ++y)
         {
             Vector4& colorAccumulator = imagePixels[y * renderOptions.m_outputWidth + x];
-            for (size_t sampleCount = 0; sampleCount < maxSampleCount; ++sampleCount)
+            for (size_t sampleCount = 0; sampleCount < renderOptions.m_numberOfSamples; ++sampleCount)
             {
                 Ray ray;
                 ray.CreateRay(renderOptions, x, y);
@@ -38,7 +38,7 @@ int main()
                 colorAccumulator += scene.TraceRay(ray);
             }
 
-            colorAccumulator /= maxSampleCount;
+            colorAccumulator /= renderOptions.m_numberOfSamples;
         }
     }
 
