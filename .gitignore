@@ -115,3 +115,6 @@ x64/Release/RayTracer.exe
 x64/Release/RayTracer.iobj
 x64/Release/RayTracer.ipdb
 x64/Release/RayTracer.pdb
+.vs/RayTracer/v16/ipch/AutoPCH/172aefa79c99fddb/RENDEROPTIONS.ipch
+.vs/RayTracer/v16/ipch/AutoPCH/905d5c5c6ce9c7b0/RAY.ipch
+x64/Release/output500.bmp

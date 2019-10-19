@@ -10,15 +10,16 @@ int main()
 {
     Sphere sphere;
     sphere.m_position = Vector3::zero();
-    sphere.m_radius = 0.5;
+    sphere.m_radius = 10;
     Scene scene;
     scene.m_shapes.push_back(&sphere);
 
     Camera cam;
     cam.positionCamera(Vector3(0.0, 0.0, -50.0), Vector3::zero(), Vector3::yAxis());
     
-    RenderOptions renderOptions(cam, 1024, 1024, math::gmPI / 8.0);
-    auto maxSampleCount = 1;
+    RenderOptions renderOptions(cam, 1024, 1024, math::gmPI / 4.0);
+    auto maxSampleCount = 10;
+    renderOptions.m_usePathTracing = true;
 
     std::vector<Vector4> imagePixels;
     imagePixels.resize(renderOptions.m_outputWidth * renderOptions.m_outputHeight);
@@ -31,7 +32,7 @@ int main()
             for (size_t sampleCount = 0; sampleCount < maxSampleCount; ++sampleCount)
             {
                 Ray ray;
-                ray.CreateRay(renderOptions.m_cam.getEye(), renderOptions, x, y);
+                ray.CreateRay(renderOptions, x, y);
 
                 //send ray into scene
                 colorAccumulator += scene.TraceRay(ray);

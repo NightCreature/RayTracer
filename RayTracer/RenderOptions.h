@@ -13,7 +13,7 @@ struct RenderOptions
         , m_outputHeight(height)
         , m_aspectRatio(width/height)
         , m_fov(fov)
-        , m_tanFov(tan(fov))
+        , m_tanFov(tan(fov/2))
     {}
 
     Camera m_cam;
@@ -23,6 +23,7 @@ struct RenderOptions
     size_t m_aspectRatio;
     double m_fov;
     double m_tanFov;
+    double m_nearPlaneDistance = 0.1;
 
     bool m_usePathTracing = false;
 };

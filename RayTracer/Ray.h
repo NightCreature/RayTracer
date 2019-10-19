@@ -9,5 +9,7 @@ struct Ray
     Vector3 m_origin;
     Vector3 m_direction;
 
-    void CreateRay(const Vector3& eye, const RenderOptions& options, size_t x, size_t y);
+    void CreateRay(const RenderOptions& options, size_t x, size_t y);
+
+    const Vector3 PointAtT(double t) const { return m_origin + m_direction * t; }
 };

@@ -13,8 +13,8 @@ Vector4 Scene::TraceRay(Ray ray)
         IntersectionInformation info;
         if (shape->Intersect(ray, info))
         {
-            return Vector4(0, 0, 1, 0);
+            return Vector4(1,1,1, 0);
         }
     }
-    return Vector4(1, 0, 0, 0);
+    return Vector4(0, 0, 0, 0);
 }

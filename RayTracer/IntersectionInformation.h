@@ -4,6 +4,8 @@
 
 struct IntersectionInformation
 {
-    Vector3 m_hit;
+    double m_hitTimeAlongRay;
+    Vector3 m_hitPoint;
+    Vector3 m_normal;
 };
 
