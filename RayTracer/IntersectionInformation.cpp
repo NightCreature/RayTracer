@@ -1,0 +1,1 @@
+#include "IntersectionInformation.h"
