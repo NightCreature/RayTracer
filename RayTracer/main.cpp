@@ -9,10 +9,24 @@
 int main()
 {
     Sphere sphere;
-    sphere.m_position = Vector3::zero();
-    sphere.m_radius = 10;
+    sphere.m_position = Vector3(-6, 0, 0);
+    sphere.m_radius = 6;
+    sphere.m_material.m_diffuseColor = Vector4(1, 0, 0, 0);
     Scene scene;
     scene.m_shapes.push_back(&sphere);
+
+    Sphere sphere2;
+    sphere2.m_position = Vector3(6, 0, 0);
+    sphere2.m_radius = 6;
+    sphere2.m_material.m_diffuseColor = Vector4(0, 0, 1, 0);
+    scene.m_shapes.push_back(&sphere2);
+
+
+    Sphere sphere3;
+    sphere3.m_position = Vector3(0, 6, 0);
+    sphere3.m_radius = 6;
+    sphere3.m_material.m_diffuseColor = Vector4(0, 1, 0, 0);
+    scene.m_shapes.push_back(&sphere3);
 
     Camera cam;
     cam.positionCamera(Vector3(0.0, 0.0, 12.0), Vector3::zero(), Vector3::yAxis());
@@ -38,7 +52,7 @@ int main()
                 colorAccumulator += scene.TraceRay(ray);
             }
 
-            colorAccumulator /= renderOptions.m_numberOfSamples;
+            colorAccumulator /= static_cast<double>(renderOptions.m_numberOfSamples);
         }
     }
 
