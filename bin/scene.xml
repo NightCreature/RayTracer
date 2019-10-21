@@ -4,6 +4,6 @@
         <Sphere x="14" y="0" z="0" radius="6" r="0.75" g="0.75" b="0.75" a="0"/>
         <Sphere x="-14" y="0" z="0" radius="6" r="0.75" g="0.75" b="0.75" a="0" />
 
-        <Square x="0" y="0" z="-10" width="100" height="100" r="0.75" g="0.75" b="0.75" a="0" />
+        <Square x="0" y="-5" z="0" nx="0" ny="1" nz="0" width="100" height="100" r="0.75" g="0.75" b="5.75" a="0" />
     </scene>
 </xml>

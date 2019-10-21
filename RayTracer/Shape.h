@@ -43,5 +43,6 @@ public:
     virtual bool Intersect(const Ray& ray, double intersectionMin, double intersectionMax, IntersectionInformation& info) override;
 
     Vector3 m_position;
+    Vector3 m_normal;
     Vector2 m_size;
 };

@@ -45,6 +45,16 @@ bool Sphere::Intersect(const Ray& ray, double intersectionMin, double intersecti
 ///-----------------------------------------------------------------------------
 bool Triangle::Intersect(const Ray& ray, double intersectionMin, double intersectionMax, IntersectionInformation& info)
 {
+    //auto denominator = ray.m_direction.dot(m_normal);
+    //if (denominator > 0) //hit on infinite plane
+    //{
+    //    info.m_hitTimeAlongRay = (m_position - ray.m_origin).dot(m_normal) / denominator;
+    //    info.m_hitPoint = ray.PointAtT(info.m_hitTimeAlongRay);
+
+
+    //    return true;
+    //}
+
     return false;
 }
 
@@ -54,5 +64,15 @@ bool Triangle::Intersect(const Ray& ray, double intersectionMin, double intersec
 ///-----------------------------------------------------------------------------
 bool Square::Intersect(const Ray& ray, double intersectionMin, double intersectionMax, IntersectionInformation& info)
 {
+    auto denominator = ray.m_direction.dot(m_normal);
+    if (denominator > 0) //hit on infinite plane
+    {
+        info.m_hitTimeAlongRay = (m_position - ray.m_origin).dot(m_normal) / denominator;
+        info.m_hitPoint = ray.PointAtT(info.m_hitTimeAlongRay);
+        info.m_normal = m_normal;
+
+        return true;
+    }
+
     return false;
 }
