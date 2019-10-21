@@ -20,26 +20,24 @@ Vector4 Scene::TraceRay(Ray ray, size_t bounceCount)
         IntersectionInformation info;
         if (shape->Intersect(ray, 0.00001, std::numeric_limits<double>::max(), info))
         {
-            //We need to fire a bounce ray of this object to see if we hit anything else, for now we are perfect diffuse whcih means we hit with a random vector in the hemisphere of the normal we just hit
-            Vector3 dir = CreateRandomUnitVector();
-
-            Ray bounceRay;
-            bounceRay.m_direction = (info.m_hitPoint + info.m_normal + dir) - info.m_hitPoint;
-            bounceRay.m_direction.normalize();
-            bounceRay.m_origin = info.m_hitPoint;
-            for (auto additionalHitShape : m_shapes)
+            if (bounceCount > 0)
             {
-                if (additionalHitShape->Intersect(bounceRay, 0.00001, std::numeric_limits<double>::max(), info))
-                {
-                    return 0.5 * additionalHitShape->m_material.m_diffuseColor;
-                }
+                //We need to fire a bounce ray of this object to see if we hit anything else, for now we are perfect diffuse whcih means we hit with a random vector in the hemisphere of the normal we just hit
+                Vector3 dir = CreateRandomUnitVector();
+
+                Ray bounceRay;
+                bounceRay.m_direction = (info.m_hitPoint + info.m_normal + dir) - info.m_hitPoint;
+                bounceRay.m_direction.normalize();
+                bounceRay.m_origin = info.m_hitPoint;
+
+                return shape->m_material.m_diffuseColor * TraceRay(bounceRay, bounceCount - 1);
             }
 
             return shape->m_material.m_diffuseColor;
         }
     }
 
-    return Vector4();
+    return Vector4(1, 1, 1, 1);
 }
 
 ///-----------------------------------------------------------------------------
