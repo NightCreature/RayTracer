@@ -2,12 +2,17 @@
 
 #include "Shape.h"
 
+#include <filesystem>
 #include <vector>
 
 struct Scene
 {
     std::vector<Shape*> m_shapes;
+    std::vector<Sphere> m_spheres;
+    std::vector<Square> m_squares;
 
-    Vector4 TraceRay(Ray ray);
+    Vector4 TraceRay(Ray ray, size_t bounceCount);
+
+    void DeserialiseScene(const std::filesystem::path& file);
 };
 

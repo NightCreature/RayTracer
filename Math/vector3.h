@@ -85,6 +85,12 @@ inline Vector3 operator- (const Vector3& lhs, const Vector3& rhs)
     return lhs.add(-rhs);
 }
 
+//Exists so we can treat colors like vectors
+inline Vector3 operator* (const Vector3& lhs, const Vector3& rhs)
+{
+    return Vector3(lhs.x() * rhs.x(), lhs.y() * rhs.y(), lhs.z() * rhs.z());
+}
+
 inline Vector3 operator* (const Vector3& lhs, double rhs)
 {
     return lhs.multiply(rhs);

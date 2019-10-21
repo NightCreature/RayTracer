@@ -1,3 +1,3 @@
 <xml>
-    <RenderOptions ouputWidth="256" ouputHeight="256" nearDistance="0.1" noSamples="10" noBounces="5" />
+    <RenderOptions ouputWidth="1024" ouputHeight="1024" nearDistance="0.1" noSamples="50" noBounces="5" />
 </xml>

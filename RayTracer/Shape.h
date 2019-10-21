@@ -37,3 +37,11 @@ public:
 
 };
 
+class Square : public Shape
+{
+public:
+    virtual bool Intersect(const Ray& ray, double intersectionMin, double intersectionMax, IntersectionInformation& info) override;
+
+    Vector3 m_position;
+    Vector2 m_size;
+};

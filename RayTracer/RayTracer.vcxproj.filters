@@ -63,6 +63,9 @@
     <ClCompile Include="..\..\Demo\SpaceSim\SpaceSim\Core\tinyxml2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Utilities.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Ray.h">
@@ -113,6 +116,9 @@
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\bin\rendersettings.xml">
+      <Filter>Resource Files</Filter>
+    </Xml>
+    <Xml Include="..\bin\scene.xml">
       <Filter>Resource Files</Filter>
     </Xml>
   </ItemGroup>

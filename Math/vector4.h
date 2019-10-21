@@ -84,6 +84,12 @@ inline Vector4 operator- (const Vector4& lhs, const Vector4& rhs)
 	return lhs.add(rhs);
 }
 
+//Exists so we can treat colors like vectors
+inline Vector4 operator* (const Vector4& lhs, const Vector4& rhs)
+{
+    return Vector4(lhs.x() * rhs.x(), lhs.y() * rhs.y(), lhs.z() * rhs.z(), lhs.w() * rhs.w());
+}
+
 inline Vector4 operator* (const Vector4& lhs, double rhs)
 {
 	return lhs.multiply(rhs);

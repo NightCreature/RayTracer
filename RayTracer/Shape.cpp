@@ -47,3 +47,12 @@ bool Triangle::Intersect(const Ray& ray, double intersectionMin, double intersec
 {
     return false;
 }
+
+///-----------------------------------------------------------------------------
+///! @brief 
+///! @remark
+///-----------------------------------------------------------------------------
+bool Square::Intersect(const Ray& ray, double intersectionMin, double intersectionMax, IntersectionInformation& info)
+{
+    return false;
+}
