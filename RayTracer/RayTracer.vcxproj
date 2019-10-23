@@ -73,12 +73,12 @@
     <IncludePath>D:\SDK\RayTracer;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>D:\SDK\RayTracer;D:\SDK\Demo\SpaceSim\SpaceSim\Core;$(IncludePath)</IncludePath>
+    <IncludePath>D:\SDK\RayTracer;D:\SDK\RayTracer\Threading;D:\SDK\Demo\SpaceSim\SpaceSim\Core;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)bin\</OutDir>
     <TargetName>$(ProjectName)D</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>D:\SDK\RayTracer;D:\SDK\Demo\SpaceSim\SpaceSim\Core;$(IncludePath)</IncludePath>
+    <IncludePath>D:\SDK\RayTracer;D:\SDK\RayTracer\Threading;D:\SDK\Demo\SpaceSim\SpaceSim\Core;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)bin\</OutDir>
     <TargetName>$(ProjectName)R</TargetName>
   </PropertyGroup>
@@ -144,6 +144,11 @@
     <ClCompile Include="..\Math\vector2.cpp" />
     <ClCompile Include="..\Math\vector3.cpp" />
     <ClCompile Include="..\Math\vector4.cpp" />
+    <ClCompile Include="..\Threading\Job.cpp" />
+    <ClCompile Include="..\Threading\JobSystem.cpp" />
+    <ClCompile Include="..\Threading\Thread.cpp" />
+    <ClCompile Include="..\Threading\Timer.cpp" />
+    <ClCompile Include="..\Threading\WorkerThread.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="IntersectionInformation.cpp" />
     <ClCompile Include="main.cpp" />
@@ -164,6 +169,11 @@
     <ClInclude Include="..\Math\vector2.h" />
     <ClInclude Include="..\Math\vector3.h" />
     <ClInclude Include="..\Math\vector4.h" />
+    <ClInclude Include="..\Threading\Job.h" />
+    <ClInclude Include="..\Threading\JobSystem.h" />
+    <ClInclude Include="..\Threading\Thread.h" />
+    <ClInclude Include="..\Threading\Timer.h" />
+    <ClInclude Include="..\Threading\WorkerThread.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="IntersectionInformation.h" />
     <ClInclude Include="Material.h" />

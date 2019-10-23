@@ -6,13 +6,16 @@
 #include <filesystem>
 #include <iostream>
 
+#include "Threading/Job.h"
+#include "Threading/JobSystem.h"
+
 int main()
 {
     Scene scene;
     scene.DeserialiseScene("scene.xml");
 
     Camera cam;
-    cam.positionCamera(Vector3(0.0, 0.0, 12.0), Vector3::zero(), Vector3::yAxis());
+    cam.positionCamera(Vector3(0.0, 0.0, -12.0), Vector3::zero(), Vector3::yAxis());
     
     RenderOptions renderOptions(cam, math::gmPI / 4.0);
     renderOptions.Deserialise("rendersettings.xml");
@@ -20,6 +23,15 @@ int main()
 
     std::vector<Vector4> imagePixels;
     imagePixels.resize(renderOptions.m_outputWidth * renderOptions.m_outputHeight);
+
+    SimplePrintTask tasks[10];
+    JobSystem jobSystem(3);
+    auto& jobQueue = jobSystem.GetJobQueue();
+    for (size_t counter = 0; counter < 10; ++counter)
+    {
+        jobQueue.AddJob(&tasks[0], nullptr);
+    }
+    jobSystem.SignalWorkAvailable();
 
     for (size_t x = 0; x < renderOptions.m_outputWidth; ++x)
     {
@@ -43,7 +55,8 @@ int main()
     //Save output image
     auto path = std::filesystem::current_path();
     auto fileName = path / "output.bmp";
-    auto savedImage = SaveImage(fileName.string(), imagePixels, renderOptions);
+    //auto savedImage = SaveImage(fileName.string(), imagePixels, renderOptions);
 
-    return savedImage;
+    //return savedImage;
+    return 0;
 }
