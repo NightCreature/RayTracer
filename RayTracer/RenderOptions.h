@@ -7,7 +7,6 @@
 
 struct RenderOptions
 {
-    RenderOptions() = default;
     RenderOptions(const Camera& cam, double fov)
         : m_cam(cam)
         , m_aspectRatio(static_cast<double>(m_outputWidth) / static_cast<double>(m_outputHeight))

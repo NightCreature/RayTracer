@@ -12,8 +12,6 @@ JobSystem::JobSystem(size_t numThreads)
     m_workerThreads.resize(numThreads);
 
     m_eventHandle = CreateEvent(NULL, TRUE, FALSE, "SignalWorkAvailable");
-    
-    std::atomic_int enforceOrder;
 
     size_t index = 0;
     for (auto& threadStatus : m_workerThreads)
@@ -30,8 +28,8 @@ JobSystem::JobSystem(size_t numThreads)
     index = 0;
     for (auto& threadStatus : m_workerThreads)
     {
-        std::stringstream str("WorkerThread");
-        str << index;
+        std::stringstream str;
+        str << "WorkerThread" << index;
         threadStatus.m_working = true;
         threadStatus.m_thread.createThread(1024*1024, str.str());
     }
@@ -41,8 +39,34 @@ JobSystem::JobSystem(size_t numThreads)
 ///! @brief 
 ///! @remark
 ///-----------------------------------------------------------------------------
+JobSystem::~JobSystem()
+{
+    for (auto& threadStatus : m_workerThreads)
+    {
+        threadStatus.m_thread.stopThread();
+    }
+
+    SetEvent(m_eventHandle);
+}
+
+///-----------------------------------------------------------------------------
+///! @brief 
+///! @remark
+///-----------------------------------------------------------------------------
 void JobSystem::WorkerThreadSleeping(size_t index)
 {
+    std::scoped_lock<std::mutex> sl(m_finishedMutex);
+    m_workerThreads[index].m_working = false;
+
+}
+
+///-----------------------------------------------------------------------------
+///! @brief 
+///! @remark
+///-----------------------------------------------------------------------------
+void JobSystem::WorkerThreadActive(size_t index)
+{
+    std::scoped_lock<std::mutex> sl(m_finishedMutex);
     m_workerThreads[index].m_working = false;
 
 }
@@ -54,4 +78,22 @@ void JobSystem::WorkerThreadSleeping(size_t index)
 void JobSystem::SignalWorkAvailable()
 {
     SetEvent(m_eventHandle);
+}
+
+///-----------------------------------------------------------------------------
+///! @brief 
+///! @remark
+///-----------------------------------------------------------------------------
+bool JobSystem::IsFinished()
+{
+    std::scoped_lock<std::mutex> sl(m_finishedMutex);
+    std::atomic<bool> retVal = true;
+    for (auto& threadStatus : m_workerThreads)
+    {
+        bool val = retVal;
+        val &= !(threadStatus.m_working);
+        retVal = val;
+    }
+
+    return retVal;
 }

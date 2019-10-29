@@ -100,9 +100,13 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
+      <ShowProgress>NotSet</ShowProgress>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -153,9 +157,9 @@
     <ClCompile Include="IntersectionInformation.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />
+    <ClCompile Include="PixelBlockJob.cpp" />
     <ClCompile Include="Ray.cpp" />
     <ClCompile Include="RenderOptions.cpp" />
-    <ClCompile Include="RenderOptions.h" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Shape.cpp" />
     <ClCompile Include="Utilities.cpp" />
@@ -177,7 +181,9 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="IntersectionInformation.h" />
     <ClInclude Include="Material.h" />
+    <ClInclude Include="PixelBlockJob.h" />
     <ClInclude Include="Ray.h" />
+    <ClInclude Include="RenderOptions.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Shape.h" />
     <ClInclude Include="Utilities.h" />

@@ -1,6 +1,8 @@
 #include "Job.h"
 
+#include <atomic>
 #include <sstream>
+
 
 ///-----------------------------------------------------------------------------
 ///! @brief 
@@ -15,14 +17,14 @@ JobQueue::JobQueue()
 ///! @brief 
 ///! @remark
 ///-----------------------------------------------------------------------------
-void JobQueue::AddJob(Job* job, void* arguments)
+void JobQueue::AddJob(Job* job)
 {
-    EnterCriticalSection(&m_criticalSection);
+    std::scoped_lock<std::mutex> aquireLock(m_mutex);
+    //EnterCriticalSection(&m_criticalSection);
     Workload load;
     load.m_job = job;
-    load.m_arguments = arguments;
     m_jobs.push_back(load);
-    LeaveCriticalSection(&m_criticalSection);
+    //LeaveCriticalSection(&m_criticalSection);
 }
 
 ///-----------------------------------------------------------------------------
@@ -31,25 +33,28 @@ void JobQueue::AddJob(Job* job, void* arguments)
 ///-----------------------------------------------------------------------------
 Workload JobQueue::GetNextWorkLoad()
 {
+    std::scoped_lock<std::mutex> aquireLock(m_mutex);
     Workload workload;
     //Use critical sections for now
-    EnterCriticalSection(&m_criticalSection);
+    //EnterCriticalSection(&m_criticalSection);
     if (!m_jobs.empty())
     {
         workload = *m_jobs.rbegin();
         m_jobs.pop_back();
     }
-    LeaveCriticalSection(&m_criticalSection);
+    //LeaveCriticalSection(&m_criticalSection);
     return workload;
 }
+
+std::atomic<size_t> globalCounter = 0;
 
 ///-----------------------------------------------------------------------------
 ///! @brief 
 ///! @remark
 ///-----------------------------------------------------------------------------
-void SimplePrintTask::Execute(void* arguments, size_t index)
+void SimplePrintTask::Execute(size_t threadIndex)
 {
     std::stringstream str("");
-    str << "Thread " << index << " executing\n";
+    str << ++globalCounter << " Thread " << threadIndex << " executing\n";
     OutputDebugString(str.str().c_str());
 }

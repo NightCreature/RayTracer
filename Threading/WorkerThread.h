@@ -17,5 +17,7 @@ public:
     JobSystem* m_jobSystem;
     size_t m_index = 0;
     HANDLE m_workAvailableHandle;
+
+    bool m_threadPaused = false;
 };
 
