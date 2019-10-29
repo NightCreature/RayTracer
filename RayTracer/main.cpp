@@ -8,11 +8,10 @@
 #include "Utilities.h"
 
 #include <array>
+#include <atomic>
 #include <filesystem>
 #include <iostream>
 #include <sstream>
-
-
 
 int main()
 {
@@ -87,12 +86,13 @@ int main()
     size_t timeStamp2 = timer.getTimeStamp();
     str << "Time Elapsed on main: " << (timeStamp2 - timeStamp) / timer.getResolution() << "s\n";
     str << "<<<<MAIN>>>>>\n";
+
     while (!jobSystem.IsFinished())
     {
         Sleep(5000);
     }
 
-    timeStamp = timer.getTimeStamp() - timeStamp;
+
     str << "Jobs done time elapsed on main: " << (timer.getTimeStamp() - timeStamp2) / timer.getResolution() << "s\n";
     str << "<<<<MAIN>>>>>\n";
     OutputDebugString(str.str().c_str());

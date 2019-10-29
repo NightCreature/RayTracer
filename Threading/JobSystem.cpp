@@ -88,6 +88,10 @@ bool JobSystem::IsFinished()
 {
     std::scoped_lock<std::mutex> sl(m_finishedMutex);
     std::atomic<bool> retVal = true;
+    if (m_jobQueue.m_jobs.size() > 0)
+    {
+        return false;
+    }
     for (auto& threadStatus : m_workerThreads)
     {
         bool val = retVal;
