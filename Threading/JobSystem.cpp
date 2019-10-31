@@ -10,8 +10,10 @@
 JobSystem::JobSystem(size_t numThreads)
 {
     m_workerThreads.resize(numThreads);
+    m_numberOfSleepingThreads = 0;
 
     m_eventHandle = CreateEvent(NULL, TRUE, FALSE, "SignalWorkAvailable");
+    m_workFinishedEvent = CreateEvent(NULL, TRUE, FALSE, "WorkFinishedEvent");
 
     size_t index = 0;
     for (auto& threadStatus : m_workerThreads)
@@ -23,6 +25,7 @@ JobSystem::JobSystem(size_t numThreads)
 
     //Set the work available even to unsignaled
     ResetEvent(m_eventHandle);
+    ResetEvent(m_workFinishedEvent);
 
     //Start all threads
     index = 0;
@@ -45,8 +48,6 @@ JobSystem::~JobSystem()
     {
         threadStatus.m_thread.stopThread();
     }
-
-    SetEvent(m_eventHandle);
 }
 
 ///-----------------------------------------------------------------------------
@@ -57,6 +58,13 @@ void JobSystem::WorkerThreadSleeping(size_t index)
 {
     std::scoped_lock<std::mutex> sl(m_finishedMutex);
     m_workerThreads[index].m_working = false;
+    ++m_numberOfSleepingThreads;
+
+    //Should we set the event for all work is done
+    if (m_jobQueue.m_jobs.empty() && m_numberOfSleepingThreads == m_workerThreads.size())
+    {
+        SetEvent(m_workFinishedEvent);
+    }
 
 }
 
@@ -67,8 +75,8 @@ void JobSystem::WorkerThreadSleeping(size_t index)
 void JobSystem::WorkerThreadActive(size_t index)
 {
     std::scoped_lock<std::mutex> sl(m_finishedMutex);
-    m_workerThreads[index].m_working = false;
-
+    m_workerThreads[index].m_working = true;
+    --m_numberOfSleepingThreads;
 }
 
 ///-----------------------------------------------------------------------------
@@ -78,26 +86,23 @@ void JobSystem::WorkerThreadActive(size_t index)
 void JobSystem::SignalWorkAvailable()
 {
     SetEvent(m_eventHandle);
+    ResetEvent(m_workFinishedEvent);
 }
 
 ///-----------------------------------------------------------------------------
 ///! @brief 
 ///! @remark
 ///-----------------------------------------------------------------------------
-bool JobSystem::IsFinished()
+void JobSystem::WaitfForJobsToFinish()
 {
-    std::scoped_lock<std::mutex> sl(m_finishedMutex);
-    std::atomic<bool> retVal = true;
-    if (m_jobQueue.m_jobs.size() > 0)
-    {
-        return false;
-    }
-    for (auto& threadStatus : m_workerThreads)
-    {
-        bool val = retVal;
-        val &= !(threadStatus.m_working);
-        retVal = val;
-    }
+    SetEvent(m_eventHandle);
+    ResetEvent(m_workFinishedEvent);
+    DWORD waitReturn = WaitForSingleObject(m_workFinishedEvent, INFINITE);
 
-    return retVal;
+    std::stringstream str("");
+    str << "<<<<< JobSystem >>>>>\n";
+    str << "Number of sleeping threads: " << m_numberOfSleepingThreads << "\n";
+    str << "waitReturn: " << waitReturn << "\n";
+    str << "<<<<< JobSystem >>>>>\n";
+    OutputDebugString(str.str().c_str());
 }

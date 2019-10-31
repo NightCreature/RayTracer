@@ -29,9 +29,7 @@ int main()
     std::vector<Vector4> imagePixels;
     imagePixels.resize(renderOptions.m_outputWidth * renderOptions.m_outputHeight);
 
-    constexpr size_t numberOfThreads = 3;
-
-    JobSystem jobSystem(numberOfThreads);
+    JobSystem jobSystem(renderOptions.m_numberOfWorkerThreads);
     auto& jobQueue = jobSystem.GetJobQueue();
 
 
@@ -61,39 +59,31 @@ int main()
     param.m_scene = &scene;
 
 
-    std::array<PixelBlockJob, numberOfThreads> pixelJobs;
-    for (auto& pixelJob : pixelJobs)
+    std::vector<PixelBlockJob> pixelJobs;
+    pixelJobs.resize(renderOptions.m_numberOfWorkerThreads);
+    for (size_t counter = 0; counter < renderOptions.m_numberOfWorkerThreads; ++counter)
     {
         param.m_startIndex = param.m_endIndex;
-        param.m_endIndex = param.m_startIndex + renderOptions.m_outputHeight / numberOfThreads;
+        param.m_endIndex = param.m_startIndex + renderOptions.m_outputHeight / renderOptions.m_numberOfWorkerThreads;
+        pixelJobs[counter] = PixelBlockJob(param);
+    }
 
-        pixelJob = PixelBlockJob(param);
-
-        jobQueue.AddJob(&pixelJob);
+    for (auto& job : pixelJobs)
+    {
+        jobQueue.AddJob(&job);
     }
 
     OutputDebugString("Start Work on Jobs\n");
-    jobSystem.SignalWorkAvailable();
+    //jobSystem.SignalWorkAvailable();
 
     PerformanceTimer timer;
     timer.update();
     size_t timeStamp = timer.getTimeStamp();
 
-    OutputDebugString("Sleep main for 20 seconds\n");
-    Sleep(20000);
+    jobSystem.WaitfForJobsToFinish();
 
-    std::stringstream str("<<<<MAIN>>>>>\n");
-    size_t timeStamp2 = timer.getTimeStamp();
-    str << "Time Elapsed on main: " << (timeStamp2 - timeStamp) / timer.getResolution() << "s\n";
-    str << "<<<<MAIN>>>>>\n";
-
-    while (!jobSystem.IsFinished())
-    {
-        Sleep(5000);
-    }
-
-
-    str << "Jobs done time elapsed on main: " << (timer.getTimeStamp() - timeStamp2) / timer.getResolution() << "s\n";
+    std::stringstream str("");
+    str << "Jobs done time elapsed on main: " << (timer.getTimeStamp() - timeStamp) / timer.getResolution() << "s\n";
     str << "<<<<MAIN>>>>>\n";
     OutputDebugString(str.str().c_str());
 

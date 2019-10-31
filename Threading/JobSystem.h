@@ -3,6 +3,7 @@
 #include "Job.h"
 #include "WorkerThread.h"
 
+#include <atomic>
 #include <mutex>
 #include <vector>
 
@@ -19,7 +20,7 @@ public:
     void WorkerThreadActive(size_t index);
 
     void SignalWorkAvailable();
-    bool IsFinished();
+    void WaitfForJobsToFinish();
 
     struct ThreadStatus
     {
@@ -31,7 +32,9 @@ public:
     JobQueue m_jobQueue;
 
     HANDLE m_eventHandle;
+    HANDLE m_workFinishedEvent;
 
     std::mutex m_finishedMutex;
+    std::atomic_size_t m_numberOfSleepingThreads;
 };
 
