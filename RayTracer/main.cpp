@@ -20,7 +20,7 @@ int main()
     scene.DeserialiseScene("scene.xml");
 
     Camera cam;
-    cam.positionCamera(Vector3(0.0, 0.0, -12.0), Vector3::zero(), Vector3::yAxis());
+    cam.positionCamera(Vector3(0.0, 0.0, -12), Vector3::zero(), Vector3::yAxis());
     
     RenderOptions renderOptions(cam, math::gmPI / 4.0);
     renderOptions.Deserialise("rendersettings.xml");
@@ -58,13 +58,24 @@ int main()
     param.m_renderOptions = &renderOptions;
     param.m_scene = &scene;
 
-
+    size_t numberOfJobs = renderOptions.m_numberOfTasks;
+    if (renderOptions.m_outputHeight / renderOptions.m_numberOfTasks != 0)
+    {
+        size_t pixelRowsPerJob = (renderOptions.m_outputHeight / renderOptions.m_numberOfTasks);
+        size_t pixelRowsLeft = renderOptions.m_outputHeight - pixelRowsPerJob * numberOfJobs;
+        size_t additionalJobs = static_cast<size_t>(std::ceil(pixelRowsLeft / static_cast<double>(pixelRowsPerJob)));
+        numberOfJobs += additionalJobs;
+    }
     std::vector<PixelBlockJob> pixelJobs;
-    pixelJobs.resize(renderOptions.m_numberOfWorkerThreads);
-    for (size_t counter = 0; counter < renderOptions.m_numberOfWorkerThreads; ++counter)
+    pixelJobs.resize(numberOfJobs);
+    for (size_t counter = 0; counter < numberOfJobs; ++counter)
     {
         param.m_startIndex = param.m_endIndex;
-        param.m_endIndex = param.m_startIndex + renderOptions.m_outputHeight / renderOptions.m_numberOfWorkerThreads;
+        param.m_endIndex = param.m_startIndex + renderOptions.m_outputHeight / renderOptions.m_numberOfTasks;
+        if (param.m_endIndex > renderOptions.m_outputHeight)
+        {
+            param.m_endIndex = renderOptions.m_outputHeight;
+        }
         pixelJobs[counter] = PixelBlockJob(param);
     }
 
@@ -91,6 +102,9 @@ int main()
     //Save output image
     auto path = std::filesystem::current_path();
     auto fileName = path / "output.bmp";
+    OutputDebugString("Saving To: ");
+    OutputDebugString(fileName.string().c_str());
+    OutputDebugString("\n");
     auto savedImage = SaveImage(fileName.string(), imagePixels, renderOptions);
 
     OutputDebugString("Finished Saving Image\n");

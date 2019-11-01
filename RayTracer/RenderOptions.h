@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Camera.h"
+#include "Math/matrix44.h"
 
 #include <cmath>
 #include <filesystem>
@@ -17,12 +18,15 @@ struct RenderOptions
     void Deserialise(const std::filesystem::path& settingsFilePath);
 
     Camera m_cam;
+    Matrix44 m_projectionMatrix;
+    Matrix44 m_invProjection;
 
     size_t m_outputWidth = 256;
     size_t m_outputHeight= 256;
     size_t m_numberOfSamples;
     size_t m_numberOfBounces = 1;
     size_t m_numberOfWorkerThreads = 1;
+    size_t m_numberOfTasks = 1;
     double m_aspectRatio;
     double m_fov;
     double m_tanFov;

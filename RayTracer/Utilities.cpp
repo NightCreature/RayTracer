@@ -63,6 +63,7 @@ bool SaveImage(const std::string& fileName, std::vector<Vector4>& pixels, const 
     // write the data and close the file
     fwrite(&header, sizeof(header), 1, file);
     fwrite(&infoHeader, sizeof(infoHeader), 1, file);
+    //std::reverse(outPixels.begin(), outPixels.end());
     fwrite(&outPixels[0], infoHeader.biSizeImage, 1, file);
     fclose(file);
     return true;
