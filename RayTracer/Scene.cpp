@@ -1,6 +1,7 @@
 #include "Scene.h"
 
 #include "IntersectionInformation.h"
+#include "Math/MathUtilityFunctions.h"
 #include "tinyxml2.h"
 #include "Utilities.h"
 
@@ -24,10 +25,37 @@ Vector4 Scene::TraceRay(Ray ray, size_t bounceCount)
             {
                 //We need to fire a bounce ray of this object to see if we hit anything else, for now we are perfect diffuse whcih means we hit with a random vector in the hemisphere of the normal we just hit
                 Vector3 dir;
-                if (info.m_material.m_isRefelective)
+                if (info.m_material.m_isRefelective || info.m_material.m_isRefracting)
                 {
-                    //Reflector so we need to calculate the reflection vector
-                    dir = ray.m_direction - 2.f * ray.m_direction.dot(info.m_normal) * info.m_normal;
+                    if (info.m_material.m_isRefelective)
+                    {
+                        //Reflector so we need to calculate the reflection vector
+                        dir = ray.m_direction - 2.f * ray.m_direction.dot(info.m_normal) * info.m_normal;
+                    }
+
+                    if (info.m_material.m_isRefracting)
+                    {
+                        double cosi = math::clamp(ray.m_direction.dot(info.m_normal), -1.0, 1.0);
+                        double etai = 1;
+                        double etat = info.m_material.m_refractinIndex;
+                        Vector3 normal = info.m_normal;
+                        if (cosi < 0)
+                        {
+                            cosi = -cosi;
+                        }
+                        else
+                        {
+                            std::swap(etai, etat);
+                            normal = -normal;
+                        }
+
+                        double eta = etai / etat;
+                        double k = 1 - eta * eta * (1 - cosi * cosi);
+                        if (k > 0)
+                        {
+                            dir = eta * ray.m_direction + (eta * cosi - sqrt(k)) * normal;
+                        }
+                    }
                 }
                 else
                 {
@@ -70,7 +98,8 @@ void Scene::DeserialiseScene(const std::filesystem::path& file)
                 sphere.m_radius = xmlElement->DoubleAttribute("radius");
                 sphere.m_material.m_diffuseColor = Vector4(xmlElement->DoubleAttribute("r"), xmlElement->DoubleAttribute("g"), xmlElement->DoubleAttribute("b"), xmlElement->DoubleAttribute("a"));
                 sphere.m_material.m_isRefelective = xmlElement->BoolAttribute("reflect");
-                sphere.m_material.m_isRefractomg = xmlElement->BoolAttribute("refract");
+                sphere.m_material.m_isRefracting = xmlElement->BoolAttribute("refract");
+                sphere.m_material.m_refractinIndex = xmlElement->DoubleAttribute("refractionIndex");
 
                 m_spheres.push_back(sphere);
             }
@@ -83,7 +112,8 @@ void Scene::DeserialiseScene(const std::filesystem::path& file)
                 square.m_size = Vector2(xmlElement->DoubleAttribute("width"), xmlElement->DoubleAttribute("height"));
                 square.m_material.m_diffuseColor = Vector4(xmlElement->DoubleAttribute("r"), xmlElement->DoubleAttribute("g"), xmlElement->DoubleAttribute("b"), xmlElement->DoubleAttribute("a"));
                 square.m_material.m_isRefelective = xmlElement->BoolAttribute("reflect");
-                square.m_material.m_isRefractomg = xmlElement->BoolAttribute("refract");
+                square.m_material.m_isRefracting = xmlElement->BoolAttribute("refract");
+                square.m_material.m_refractinIndex = xmlElement->DoubleAttribute("refractionIndex");
 
                 m_squares.push_back(square);
             }
@@ -97,7 +127,9 @@ void Scene::DeserialiseScene(const std::filesystem::path& file)
                 triangle.m_normal.normalize();
                 triangle.m_material.m_diffuseColor = Vector4(xmlElement->DoubleAttribute("r"), xmlElement->DoubleAttribute("g"), xmlElement->DoubleAttribute("b"), xmlElement->DoubleAttribute("a"));
                 triangle.m_material.m_isRefelective = xmlElement->BoolAttribute("reflect");
-                triangle.m_material.m_isRefractomg = xmlElement->BoolAttribute("refract");
+                triangle.m_material.m_isRefracting = xmlElement->BoolAttribute("refract");
+                triangle.m_material.m_refractinIndex = xmlElement->DoubleAttribute("refractionIndex");
+                
                 m_triangles.push_back(triangle);
             }
         }
