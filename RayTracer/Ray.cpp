@@ -22,14 +22,24 @@ void Ray::CreateRay(const RenderOptions& options, size_t x, size_t y)
     auto xPixel = (x + randomX) / options.m_outputWidth;
     auto yPixel = (y + randomY) / options.m_outputHeight;
 
-    auto u = (xPixel * 2.0f - 1.0f) * options.m_aspectRatio;
-    auto v = 1.0f - yPixel * 2.0f;
+    auto u = (xPixel * 2.0f - 1.0f) * options.m_aspectRatio * options.m_tanFov;
+    auto v = 1.0f - yPixel * 2.0f * options.m_tanFov;
 
     // find where the ray hits the near plane, and normalize that vector to get the ray direction.6
-    m_origin = options.m_cam.getEye() + options.m_cam.getLookAt() * options.m_nearPlaneDistance;
+    /*m_origin = options.m_cam.getEye() + options.m_cam.getLookAt() * options.m_nearPlaneDistance;
     m_origin += options.m_cam.getRight() * WindowRight * u;
     m_origin += options.m_cam.getUp() * WindowTop * v;
     m_direction = m_origin - options.m_cam.getEye();
+    m_direction.normalize();*/
+
+    m_origin = Vector3(0, 0, 25);
+    m_direction = Vector3(u, v, -1);
+
+    //Matrix44 cameraMatrix = options.m_cam.getCamera();
+    //auto origen = Vector4(m_origin, 1) * cameraMatrix;
+    //auto direction = Vector4(m_direction, 1) * cameraMatrix;
+    //m_origin = Vector3(origen.x(), origen.y(), origen.z());
+    //m_direction = Vector3(direction.x(), direction.y(), direction.z()) - m_origin;
     m_direction.normalize();
 
     //Vector3 translation;
