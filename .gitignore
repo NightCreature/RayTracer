@@ -132,6 +132,5 @@ bin/RayTracerR.exe
 bin/RayTracerR.iobj
 bin/RayTracerR.ipdb
 bin/RayTracerR.pdb
-RayTracer/RenderOptions.cpp
 .vs/
 *.bmp
