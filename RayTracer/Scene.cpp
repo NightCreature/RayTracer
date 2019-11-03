@@ -23,7 +23,16 @@ Vector4 Scene::TraceRay(Ray ray, size_t bounceCount)
             if (bounceCount > 0)
             {
                 //We need to fire a bounce ray of this object to see if we hit anything else, for now we are perfect diffuse whcih means we hit with a random vector in the hemisphere of the normal we just hit
-                Vector3 dir = CreateRandomUnitVector();
+                Vector3 dir;
+                if (info.m_material.m_isRefelective)
+                {
+                    //Reflector so we need to calculate the reflection vector
+                    dir = ray.m_direction - 2.f * ray.m_direction.dot(info.m_normal) * info.m_normal;
+                }
+                else
+                {
+                    dir = CreateRandomUnitVector();
+                }
 
                 Ray bounceRay;
                 bounceRay.m_direction = (info.m_hitPoint + info.m_normal + dir) - info.m_hitPoint;
@@ -37,7 +46,7 @@ Vector4 Scene::TraceRay(Ray ray, size_t bounceCount)
         }
     }
 
-    return Vector4(1, 1, 1, 1);
+    return Vector4(1.4, 1.4, 1.4, 1);
 }
 
 ///-----------------------------------------------------------------------------
@@ -60,6 +69,7 @@ void Scene::DeserialiseScene(const std::filesystem::path& file)
                 sphere.m_position = Vector3(xmlElement->DoubleAttribute("x"), xmlElement->DoubleAttribute("y"), xmlElement->DoubleAttribute("z"));
                 sphere.m_radius = xmlElement->DoubleAttribute("radius");
                 sphere.m_material.m_diffuseColor = Vector4(xmlElement->DoubleAttribute("r"), xmlElement->DoubleAttribute("g"), xmlElement->DoubleAttribute("b"), xmlElement->DoubleAttribute("a"));
+                sphere.m_material.m_isRefelective = xmlElement->BoolAttribute("reflect");
 
                 m_spheres.push_back(sphere);
             }
@@ -71,8 +81,21 @@ void Scene::DeserialiseScene(const std::filesystem::path& file)
                 square.m_normal.normalize();
                 square.m_size = Vector2(xmlElement->DoubleAttribute("width"), xmlElement->DoubleAttribute("height"));
                 square.m_material.m_diffuseColor = Vector4(xmlElement->DoubleAttribute("r"), xmlElement->DoubleAttribute("g"), xmlElement->DoubleAttribute("b"), xmlElement->DoubleAttribute("a"));
+                square.m_material.m_isRefelective = xmlElement->BoolAttribute("reflect");
 
                 m_squares.push_back(square);
+            }
+            else if (elementName == "Triangle")
+            {
+                Triangle triangle;
+                triangle.m_point1 = Vector3(xmlElement->DoubleAttribute("vx0"), xmlElement->DoubleAttribute("vy0"), xmlElement->DoubleAttribute("vz0"));
+                triangle.m_point2 = Vector3(xmlElement->DoubleAttribute("vx1"), xmlElement->DoubleAttribute("vy1"), xmlElement->DoubleAttribute("vz1"));
+                triangle.m_point3 = Vector3(xmlElement->DoubleAttribute("vx2"), xmlElement->DoubleAttribute("vy2"), xmlElement->DoubleAttribute("vz2"));
+                triangle.m_normal = Vector3(xmlElement->DoubleAttribute("nx"), xmlElement->DoubleAttribute("ny"), xmlElement->DoubleAttribute("nz"));
+                triangle.m_normal.normalize();
+                triangle.m_material.m_diffuseColor = Vector4(xmlElement->DoubleAttribute("r"), xmlElement->DoubleAttribute("g"), xmlElement->DoubleAttribute("b"), xmlElement->DoubleAttribute("a"));
+                triangle.m_material.m_isRefelective = xmlElement->BoolAttribute("reflect");
+                m_triangles.push_back(triangle);
             }
         }
     }
@@ -85,5 +108,10 @@ void Scene::DeserialiseScene(const std::filesystem::path& file)
     for (auto& square : m_squares)
     {
         m_shapes.push_back(&square);
+    }
+    
+    for (auto& triangle : m_triangles)
+    {
+        m_shapes.push_back(&triangle);
     }
 }

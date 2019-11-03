@@ -1,3 +1,3 @@
 <xml>
-    <RenderOptions ouputWidth="1280" ouputHeight="720" nearDistance="0.1" noSamples="100" noBounces="10" numberOfWorkerThreads="3" numberOfTasks="64"/>
+    <RenderOptions ouputWidth="1920" ouputHeight="1080" nearDistance="0.1" noSamples="200" noBounces="20" numberOfWorkerThreads="3" numberOfTasks="64" camposx="0" camposy="0" camposz="-50"/>
 </xml>
