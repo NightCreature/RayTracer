@@ -10,6 +10,8 @@
 
 #undef max
 
+const double bias = 0.00005;
+
 ///-----------------------------------------------------------------------------
 ///! @brief 
 ///! @remark
@@ -47,12 +49,15 @@ Vector4 Scene::TraceRay(Ray ray, size_t bounceCount)
                     {
                         Ray refractionRay;
                         refractionRay.m_direction = Refract(ray, info.m_normal, info.m_material.m_refractinIndex);
-                        refractionRay.m_origin = outSide ? info.m_hitPoint - 0.005 : info.m_hitPoint + 0.005;
+                        refractionRay.m_direction.normalize();
+                        refractionRay.m_origin = outSide ? info.m_hitPoint - bias : info.m_hitPoint + bias;
                         refractionColor = TraceRay(refractionRay, bounceCount - 1);
                     }
+
                     Ray reflectionRay;
                     reflectionRay.m_direction = Reflect(ray, info.m_normal);
-                    reflectionRay.m_origin = outSide ? info.m_hitPoint - 0.005 : info.m_hitPoint + 0.005;
+                    reflectionRay.m_direction.normalize();
+                    reflectionRay.m_origin = outSide ? info.m_hitPoint - bias : info.m_hitPoint + bias;
                     reflectionColor = TraceRay(reflectionRay, bounceCount - 1);
 
                     color = reflectionColor * fresnelFactor + refractionColor * (1 - fresnelFactor);
@@ -67,7 +72,7 @@ Vector4 Scene::TraceRay(Ray ray, size_t bounceCount)
                 Ray bounceRay;
                 bounceRay.m_direction = dir;
                 bounceRay.m_direction.normalize();
-                bounceRay.m_origin = info.m_hitPoint;
+                bounceRay.m_origin = info.m_hitPoint + bias;
                 return color + TraceRay(bounceRay, bounceCount - 1);
             }
 

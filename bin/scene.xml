@@ -30,8 +30,8 @@
         <Triangle vx0="100" vy0="-100" vz0="-100" vx1="100" vy1="100" vz1="100" vx2="100" vy2="100" vz2="-100" nx="-1" ny="0" nz="0" r="0.5" g="0.5" b="0.5" a="1" materialType="0"/>
 -->
         <Sphere x="0" y="-10" z="0" radius="6" r="1" g="1" b="1" a="0" materialType="3" refractionIndex="1.8"/>
-        <Sphere x="14" y="0" z="0" radius="6" r="1" g="1" b="0" a="0" materialType="1"/>
-        <Sphere x="-14" y="0" z="0" radius="6" r="1" g="0" b="1" a="0" materialType="0" />
+        <Sphere x="14" y="0" z="0" radius="6" r="1" g="0" b="0" a="0" materialType="1"/>
+        <Sphere x="-14" y="0" z="0" radius="6" r="0.25" g="0.25" b="0.25" a="0" materialType="0" />
 
     </scene>
 </xml>
