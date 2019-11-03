@@ -70,6 +70,7 @@ void Scene::DeserialiseScene(const std::filesystem::path& file)
                 sphere.m_radius = xmlElement->DoubleAttribute("radius");
                 sphere.m_material.m_diffuseColor = Vector4(xmlElement->DoubleAttribute("r"), xmlElement->DoubleAttribute("g"), xmlElement->DoubleAttribute("b"), xmlElement->DoubleAttribute("a"));
                 sphere.m_material.m_isRefelective = xmlElement->BoolAttribute("reflect");
+                sphere.m_material.m_isRefractomg = xmlElement->BoolAttribute("refract");
 
                 m_spheres.push_back(sphere);
             }
@@ -82,6 +83,7 @@ void Scene::DeserialiseScene(const std::filesystem::path& file)
                 square.m_size = Vector2(xmlElement->DoubleAttribute("width"), xmlElement->DoubleAttribute("height"));
                 square.m_material.m_diffuseColor = Vector4(xmlElement->DoubleAttribute("r"), xmlElement->DoubleAttribute("g"), xmlElement->DoubleAttribute("b"), xmlElement->DoubleAttribute("a"));
                 square.m_material.m_isRefelective = xmlElement->BoolAttribute("reflect");
+                square.m_material.m_isRefractomg = xmlElement->BoolAttribute("refract");
 
                 m_squares.push_back(square);
             }
@@ -95,6 +97,7 @@ void Scene::DeserialiseScene(const std::filesystem::path& file)
                 triangle.m_normal.normalize();
                 triangle.m_material.m_diffuseColor = Vector4(xmlElement->DoubleAttribute("r"), xmlElement->DoubleAttribute("g"), xmlElement->DoubleAttribute("b"), xmlElement->DoubleAttribute("a"));
                 triangle.m_material.m_isRefelective = xmlElement->BoolAttribute("reflect");
+                triangle.m_material.m_isRefractomg = xmlElement->BoolAttribute("refract");
                 m_triangles.push_back(triangle);
             }
         }

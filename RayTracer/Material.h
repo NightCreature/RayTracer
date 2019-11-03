@@ -6,5 +6,6 @@ struct Material
 {
     Vector4 m_diffuseColor;
     bool m_isRefelective = false;
+    bool m_isRefractomg = false;
 };
 
