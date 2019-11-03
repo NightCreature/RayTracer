@@ -95,13 +95,23 @@ void JobSystem::SignalWorkAvailable()
 ///-----------------------------------------------------------------------------
 void JobSystem::WaitfForJobsToFinish()
 {
-    SetEvent(m_eventHandle);
-    ResetEvent(m_workFinishedEvent);
-    DWORD waitReturn = WaitForSingleObject(m_workFinishedEvent, INFINITE);
-
     std::stringstream str("");
     str << "<<<<< JobSystem >>>>>\n";
     str << "Number of sleeping threads: " << m_numberOfSleepingThreads << "\n";
+    str << "Number of WorkerThreads: " << m_workerThreads.size() << "\n";
+    str << "Number of tasks: " << m_jobQueue.m_jobs.size() << "\n";
+    str << "<<<<< JobSystem >>>>>\n";
+    OutputDebugString(str.str().c_str());
+
+    ResetEvent(m_workFinishedEvent);
+    SetEvent(m_eventHandle);
+    DWORD waitReturn = WaitForSingleObject(m_workFinishedEvent, INFINITE);
+
+    str.str("");
+    str << "<<<<< JobSystem >>>>>\n";
+    str << "Number of sleeping threads: " << m_numberOfSleepingThreads << "\n";
+    str << "Number of WorkerThreads: " << m_workerThreads.size() << "\n";
+    str << "Number of tasks: " << m_jobQueue.m_jobs.size() << "\n";
     str << "waitReturn: " << waitReturn << "\n";
     str << "<<<<< JobSystem >>>>>\n";
     OutputDebugString(str.str().c_str());

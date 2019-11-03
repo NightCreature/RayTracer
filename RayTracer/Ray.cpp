@@ -23,7 +23,7 @@ void Ray::CreateRay(const RenderOptions& options, size_t x, size_t y)
     auto yPixel = (y + randomY) / options.m_outputHeight;
 
     auto u = (xPixel * 2.0f - 1.0f) * options.m_aspectRatio * options.m_tanFov;
-    auto v = 1.0f - yPixel * 2.0f * options.m_tanFov;
+    auto v = (1.0f - yPixel * 2.0f) * options.m_tanFov;
 
     // find where the ray hits the near plane, and normalize that vector to get the ray direction.6
     /*m_origin = options.m_cam.getEye() + options.m_cam.getLookAt() * options.m_nearPlaneDistance;

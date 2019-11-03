@@ -19,6 +19,10 @@ int main()
     Scene scene;
     scene.DeserialiseScene("scene.xml");
 
+    std::stringstream objectCount("");
+    objectCount << "Number of objects in the scene: " << scene.m_shapes.size() << "\n";
+    OutputDebugString(objectCount.str().c_str());
+
     Camera cam;
     cam.positionCamera(Vector3(0.0, 0.0, 12), Vector3::zero(), Vector3::yAxis());
     
