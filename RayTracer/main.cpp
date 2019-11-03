@@ -20,9 +20,9 @@ int main()
     scene.DeserialiseScene("scene.xml");
 
     Camera cam;
-    cam.positionCamera(Vector3(0.0, 0.0, -12), Vector3::zero(), Vector3::yAxis());
+    cam.positionCamera(Vector3(0.0, 0.0, 12), Vector3::zero(), Vector3::yAxis());
     
-    RenderOptions renderOptions(cam, math::gmPI / 4.0);
+    RenderOptions renderOptions(cam, math::gmPI / 2.0);
     renderOptions.Deserialise("rendersettings.xml");
     renderOptions.m_usePathTracing = true;
 
