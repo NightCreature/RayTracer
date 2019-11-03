@@ -30,31 +30,14 @@ Vector4 Scene::TraceRay(Ray ray, size_t bounceCount)
                     if (info.m_material.m_isRefelective)
                     {
                         //Reflector so we need to calculate the reflection vector
-                        dir = ray.m_direction - 2.f * ray.m_direction.dot(info.m_normal) * info.m_normal;
+                        dir = Reflect(ray, info.m_normal);
+
                     }
 
                     if (info.m_material.m_isRefracting)
                     {
-                        double cosi = math::clamp(ray.m_direction.dot(info.m_normal), -1.0, 1.0);
-                        double etai = 1;
-                        double etat = info.m_material.m_refractinIndex;
-                        Vector3 normal = info.m_normal;
-                        if (cosi < 0)
-                        {
-                            cosi = -cosi;
-                        }
-                        else
-                        {
-                            std::swap(etai, etat);
-                            normal = -normal;
-                        }
+                        dir = Refract(ray, info.m_normal, info.m_material.m_refractinIndex);
 
-                        double eta = etai / etat;
-                        double k = 1 - eta * eta * (1 - cosi * cosi);
-                        if (k > 0)
-                        {
-                            dir = eta * ray.m_direction + (eta * cosi - sqrt(k)) * normal;
-                        }
                     }
                 }
                 else

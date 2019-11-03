@@ -1,5 +1,8 @@
 #include "Utilities.h"
 
+#include "Math/vector3.h"
+#include "Ray.h"
+
 #include <random>
 #include <vector>
 #include <windows.h>
@@ -85,5 +88,45 @@ Vector3 CreateRandomUnitVector()
         dir = Vector3(sdis(sgen), sdis(sgen), sdis(sgen));
     }
 
+    return dir;
+}
+
+///-----------------------------------------------------------------------------
+///! @brief 
+///! @remark
+///-----------------------------------------------------------------------------
+Vector3 Reflect(const Ray& ray, const Vector3& normal)
+{
+    return ray.m_direction - 2.f * ray.m_direction.dot(normal) * normal;
+}
+
+///-----------------------------------------------------------------------------
+///! @brief 
+///! @remark
+///-----------------------------------------------------------------------------
+Vector3 Refract(const Ray& ray, const Vector3& normal, double refractionIndex )
+{
+    Vector3 dir;
+    double cosi = math::clamp(ray.m_direction.dot(normal), -1.0, 1.0);
+    double etai = 1;
+    double etat = refractionIndex;
+    Vector3 Normal = normal;
+    if (cosi < 0)
+    {
+        cosi = -cosi;
+    }
+    else
+    {
+        std::swap(etai, etat);
+        Normal = -normal;
+    }
+
+    double eta = etai / etat;
+    double k = 1 - eta * eta * (1 - cosi * cosi);
+    if (k > 0)
+    {
+        dir = eta * ray.m_direction + (eta * cosi - sqrt(k)) * Normal;
+    }                        
+    
     return dir;
 }

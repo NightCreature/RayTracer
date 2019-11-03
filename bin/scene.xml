@@ -10,16 +10,16 @@
         <Square x="0" y="0" z="10" nx="0" ny="0" nz="-1" width="100" height="100" r="0.4" g="0.4" b="0.4" a="0" />-->
 
         <!--top-->
-        <Triangle vx0="-100" vy0="-100" vz0="-100" vx1="-100" vy1="-100" vz1="100" vx2="100" vy2="-100" vz2="100" nx="0" ny="-1" nz="0" r="1000" g="0" b="0" a="1" reflect="false"/>
-        <Triangle vx0="-100" vy0="-100" vz0="-100" vx1="100" vy1="-100" vz1="100" vx2="100" vy2="-100" vz2="-100" nx="0" ny="-1" nz="0" r="1000" g="0" b="0" a="1" reflect="false"/>
+        <Triangle vx0="-100" vy0="-100" vz0="-100" vx1="-100" vy1="-100" vz1="100" vx2="100" vy2="-100" vz2="100" nx="0" ny="-1" nz="0" r="1" g="0" b="0" a="1" reflect="false"/>
+        <Triangle vx0="-100" vy0="-100" vz0="-100" vx1="100" vy1="-100" vz1="100" vx2="100" vy2="-100" vz2="-100" nx="0" ny="-1" nz="0" r="1" g="0" b="0" a="1" reflect="false"/>
         
         <!--bottom-->
-        <Triangle vx0="-100" vy0="100" vz0="-100" vx1="-100" vy1="100" vz1="100" vx2="100" vy2="100" vz2="100" nx="0" ny="1" nz="0" r="0" g="1.9" b="1" a="1" reflect="false"/>
-        <Triangle vx0="-100" vy0="100" vz0="-100" vx1="100" vy1="100" vz1="100" vx2="100" vy2="100" vz2="-100" nx="0" ny="1" nz="0" r="0" g="1.9" b="1" a="1" reflect="false"/>
+        <Triangle vx0="-100" vy0="100" vz0="-100" vx1="-100" vy1="100" vz1="100" vx2="100" vy2="100" vz2="100" nx="0" ny="1" nz="0" r="0" g="1" b="0" a="1" reflect="false"/>
+        <Triangle vx0="-100" vy0="100" vz0="-100" vx1="100" vy1="100" vz1="100" vx2="100" vy2="100" vz2="-100" nx="0" ny="1" nz="0" r="0" g="1" b="0" a="1" reflect="false"/>
         
         <!--back-->
-        <Triangle vx0="100" vy0="100" vz0="-100" vx1="-100" vy1="100" vz1="-100" vx2="-100" vy2="-100" vz2="-100" nx="0" ny="0" nz="1" r="0.5" g="0.5" b="0.5" a="1" reflect="true"/>
-        <Triangle vx0="-100" vy0="-100" vz0="-100" vx1="100" vy1="-100" vz1="-100" vx2="100" vy2="100" vz2="-100" nx="0" ny="0" nz="1" r="0.5" g="0.5" b="0.5" a="1" reflect="true"/>
+        <Triangle vx0="100" vy0="100" vz0="-100" vx1="-100" vy1="100" vz1="-100" vx2="-100" vy2="-100" vz2="-100" nx="0" ny="0" nz="1" r="0.75" g="0.75" b="0.75" a="1" reflect="true"/>
+        <Triangle vx0="-100" vy0="-100" vz0="-100" vx1="100" vy1="-100" vz1="-100" vx2="100" vy2="100" vz2="-100" nx="0" ny="0" nz="1" r="0.75" g="0.75" b="0.75" a="1" reflect="true"/>
 
         <!--left-->
         <Triangle vx0="-100" vy0="-100" vz0="-100" vx1="-100" vy1="-100" vz1="100" vx2="-100" vy2="100" vz2="100" nx="1" ny="0" nz="0" r="1" g="1" b="1" a="1" reflect="false"/>
@@ -29,7 +29,7 @@
         <Triangle vx0="100" vy0="-100" vz0="-100" vx1="100" vy1="-100" vz1="100" vx2="100" vy2="100" vz2="100" nx="-1" ny="0" nz="0" r="1" g="1" b="1" a="1" reflect="false"/>
         <Triangle vx0="100" vy0="-100" vz0="-100" vx1="100" vy1="100" vz1="100" vx2="100" vy2="100" vz2="-100" nx="-1" ny="0" nz="0" r="1" g="1" b="1" a="1" reflect="false"/>
 
-        <Sphere x="0" y="0" z="0" radius="6" r="1.1" g="1" b="1" a="0" reflect="true" refract="true" refractionIndex="1.5"/>
+        <Sphere x="0" y="-10" z="0" radius="6" r="1" g="1" b="1" a="0" reflect="false" refract="true" refractionIndex="10.95"/>
         <Sphere x="14" y="0" z="0" radius="6" r="1" g="1" b="1" a="0" reflect="true"/>
         <Sphere x="-14" y="0" z="0" radius="6" r="1" g="1" b="1" a="0"  reflect="true"/>
 
