@@ -1,11 +1,14 @@
 #include "Utilities.h"
 
+#include "Math/MathUtilityFunctions.h"
 #include "Math/vector3.h"
 #include "Ray.h"
 
 #include <random>
 #include <vector>
 #include <windows.h>
+
+#undef max
 
 ///-----------------------------------------------------------------------------
 ///! @brief 
@@ -129,4 +132,34 @@ Vector3 Refract(const Ray& ray, const Vector3& normal, double refractionIndex )
     }                        
     
     return dir;
+}
+
+///-----------------------------------------------------------------------------
+///! @brief 
+///! @remark
+///-----------------------------------------------------------------------------
+void Fresnel(const Ray& ray, const Vector3& normal, double refractionIndex, double& fresnelFactor)
+{
+    double cosi = math::clamp(ray.m_direction.dot(normal), -1.0, 1.0);
+    double etai = 1;
+    double etat = refractionIndex;
+    if (cosi > 0) 
+    {
+        std::swap(etai, etat); 
+    }
+    // Compute sini using Snell's law
+    double sint = etai / etat * sqrt(std::max(0., 1 - cosi * cosi));
+    // Total internal reflection
+    if (sint >= 1) {
+        fresnelFactor = 1;
+    }
+    else {
+        double cost = sqrt(std::max(0., 1 - sint * sint));
+        cosi = fabs(cosi);
+        double Rs = ((etat * cosi) - (etai * cost)) / ((etat * cosi) + (etai * cost));
+        double Rp = ((etai * cosi) - (etat * cost)) / ((etai * cosi) + (etat * cost));
+        fresnelFactor = (Rs * Rs + Rp * Rp) / 2;
+    }
+    // As a consequence of the conservation of energy, transmittance is given by:
+    // kt = 1 - kr;
 }

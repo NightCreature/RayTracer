@@ -8,6 +8,7 @@ class Vector3
 {
 public:
     Vector3();
+    Vector3(double x) : Vector3(x, x, x) {}
     Vector3(double x, double y, double z);
     Vector3(const double xyz[]);
     explicit Vector3(const Vector2& vec) : m_x(vec.x()), m_y(vec.y()), m_z(0.0f) {}

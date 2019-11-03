@@ -23,41 +23,59 @@ Vector4 Scene::TraceRay(Ray ray, size_t bounceCount)
         {
             if (bounceCount > 0)
             {
-                //We need to fire a bounce ray of this object to see if we hit anything else, for now we are perfect diffuse whcih means we hit with a random vector in the hemisphere of the normal we just hit
                 Vector3 dir;
-                if (info.m_material.m_isRefelective || info.m_material.m_isRefracting)
+                Vector4 color = shape->m_material.m_diffuseColor;
+                switch (info.m_material.m_type)
                 {
-                    if (info.m_material.m_isRefelective)
-                    {
-                        //Reflector so we need to calculate the reflection vector
-                        dir = Reflect(ray, info.m_normal);
-
-                    }
-
-                    if (info.m_material.m_isRefracting)
-                    {
-                        dir = Refract(ray, info.m_normal, info.m_material.m_refractinIndex);
-
-                    }
-                }
-                else
-                {
+                case MaterialType::diffuse:
                     dir = CreateRandomUnitVector();
+                    break;
+                case MaterialType::reflective:
+                    dir = Reflect(ray, info.m_normal);
+                    break;
+                case MaterialType::refractive:
+                    dir = Refract(ray, info.m_normal, info.m_material.m_refractinIndex);
+                    break;
+                case MaterialType::fresnel:
+                {
+                    Vector4 reflectionColor;
+                    Vector4 refractionColor;
+                    double fresnelFactor;
+                    Fresnel(ray, info.m_normal, info.m_material.m_refractinIndex, fresnelFactor);
+                    bool outSide = ray.m_direction.dot(info.m_normal);
+                    if (fresnelFactor < 1)
+                    {
+                        Ray refractionRay;
+                        refractionRay.m_direction = Refract(ray, info.m_normal, info.m_material.m_refractinIndex);
+                        refractionRay.m_origin = outSide ? info.m_hitPoint - 0.005 : info.m_hitPoint + 0.005;
+                        refractionColor = TraceRay(refractionRay, bounceCount - 1);
+                    }
+                    Ray reflectionRay;
+                    reflectionRay.m_direction = Reflect(ray, info.m_normal);
+                    reflectionRay.m_origin = outSide ? info.m_hitPoint - 0.005 : info.m_hitPoint + 0.005;
+                    reflectionColor = TraceRay(reflectionRay, bounceCount - 1);
+
+                    color = reflectionColor * fresnelFactor + refractionColor * (1 - fresnelFactor);
+
                 }
+                    break;
+                default:
+                    break;
+                }
+
 
                 Ray bounceRay;
-                bounceRay.m_direction = (info.m_hitPoint + info.m_normal + dir) - info.m_hitPoint;
+                bounceRay.m_direction = dir;
                 bounceRay.m_direction.normalize();
                 bounceRay.m_origin = info.m_hitPoint;
-
-                return shape->m_material.m_diffuseColor * TraceRay(bounceRay, bounceCount - 1);
+                return color + TraceRay(bounceRay, bounceCount - 1);
             }
 
             return shape->m_material.m_diffuseColor;
         }
     }
 
-    return Vector4(1.4, 1.4, 1.4, 1);
+    return Vector4(0, 0, 0, 1);
 }
 
 ///-----------------------------------------------------------------------------
@@ -80,8 +98,7 @@ void Scene::DeserialiseScene(const std::filesystem::path& file)
                 sphere.m_position = Vector3(xmlElement->DoubleAttribute("x"), xmlElement->DoubleAttribute("y"), xmlElement->DoubleAttribute("z"));
                 sphere.m_radius = xmlElement->DoubleAttribute("radius");
                 sphere.m_material.m_diffuseColor = Vector4(xmlElement->DoubleAttribute("r"), xmlElement->DoubleAttribute("g"), xmlElement->DoubleAttribute("b"), xmlElement->DoubleAttribute("a"));
-                sphere.m_material.m_isRefelective = xmlElement->BoolAttribute("reflect");
-                sphere.m_material.m_isRefracting = xmlElement->BoolAttribute("refract");
+                sphere.m_material.m_type = static_cast<MaterialType>(xmlElement->UnsignedAttribute("materialType"));
                 sphere.m_material.m_refractinIndex = xmlElement->DoubleAttribute("refractionIndex");
 
                 m_spheres.push_back(sphere);
@@ -94,8 +111,7 @@ void Scene::DeserialiseScene(const std::filesystem::path& file)
                 square.m_normal.normalize();
                 square.m_size = Vector2(xmlElement->DoubleAttribute("width"), xmlElement->DoubleAttribute("height"));
                 square.m_material.m_diffuseColor = Vector4(xmlElement->DoubleAttribute("r"), xmlElement->DoubleAttribute("g"), xmlElement->DoubleAttribute("b"), xmlElement->DoubleAttribute("a"));
-                square.m_material.m_isRefelective = xmlElement->BoolAttribute("reflect");
-                square.m_material.m_isRefracting = xmlElement->BoolAttribute("refract");
+                square.m_material.m_type = static_cast<MaterialType>(xmlElement->UnsignedAttribute("materialType"));
                 square.m_material.m_refractinIndex = xmlElement->DoubleAttribute("refractionIndex");
 
                 m_squares.push_back(square);
@@ -109,8 +125,7 @@ void Scene::DeserialiseScene(const std::filesystem::path& file)
                 triangle.m_normal = Vector3(xmlElement->DoubleAttribute("nx"), xmlElement->DoubleAttribute("ny"), xmlElement->DoubleAttribute("nz"));
                 triangle.m_normal.normalize();
                 triangle.m_material.m_diffuseColor = Vector4(xmlElement->DoubleAttribute("r"), xmlElement->DoubleAttribute("g"), xmlElement->DoubleAttribute("b"), xmlElement->DoubleAttribute("a"));
-                triangle.m_material.m_isRefelective = xmlElement->BoolAttribute("reflect");
-                triangle.m_material.m_isRefracting = xmlElement->BoolAttribute("refract");
+                triangle.m_material.m_type = static_cast<MaterialType>(xmlElement->UnsignedAttribute("materialType"));
                 triangle.m_material.m_refractinIndex = xmlElement->DoubleAttribute("refractionIndex");
                 
                 m_triangles.push_back(triangle);
