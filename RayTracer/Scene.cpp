@@ -60,7 +60,7 @@ Vector4 Scene::TraceRay(Ray ray, size_t bounceCount)
                     reflectionRay.m_origin = outSide ? info.m_hitPoint - bias : info.m_hitPoint + bias;
                     reflectionColor = TraceRay(reflectionRay, bounceCount - 1);
 
-                    color = reflectionColor * fresnelFactor + refractionColor * (1 - fresnelFactor);
+                    return reflectionColor * fresnelFactor + refractionColor * (1 - fresnelFactor);
 
                 }
                     break;
