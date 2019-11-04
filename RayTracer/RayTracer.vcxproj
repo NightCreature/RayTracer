@@ -81,6 +81,7 @@
     <IncludePath>D:\SDK\RayTracer;D:\SDK\RayTracer\Threading;D:\SDK\Demo\SpaceSim\SpaceSim\Core;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)bin\</OutDir>
     <TargetName>$(ProjectName)R</TargetName>
+    <LibraryPath>D:\SDK\Demo\SpaceSim\SDK\Assimp\lib64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -138,6 +139,7 @@
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>assimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -153,10 +155,14 @@
     <ClCompile Include="..\Threading\Thread.cpp" />
     <ClCompile Include="..\Threading\Timer.cpp" />
     <ClCompile Include="..\Threading\WorkerThread.cpp" />
+    <ClCompile Include="AssimpModelLoader.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="IntersectionInformation.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />
+    <ClCompile Include="mesh.cpp" />
+    <ClCompile Include="MeshGroup.cpp" />
+    <ClCompile Include="MeshGroupCreator.cpp" />
     <ClCompile Include="PixelBlockJob.cpp" />
     <ClCompile Include="Ray.cpp" />
     <ClCompile Include="RenderOptions.cpp" />
@@ -178,9 +184,15 @@
     <ClInclude Include="..\Threading\Thread.h" />
     <ClInclude Include="..\Threading\Timer.h" />
     <ClInclude Include="..\Threading\WorkerThread.h" />
+    <ClInclude Include="AssimpModelLoader.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="IntersectionInformation.h" />
     <ClInclude Include="Material.h" />
+    <ClInclude Include="mesh.h" />
+    <ClInclude Include="MeshComponentData.h" />
+    <ClInclude Include="MeshGroup.h" />
+    <ClInclude Include="MeshGroupCreator.h" />
+    <ClInclude Include="Model.h" />
     <ClInclude Include="PixelBlockJob.h" />
     <ClInclude Include="Ray.h" />
     <ClInclude Include="RenderOptions.h" />
