@@ -8,6 +8,8 @@
 #include <limits>
 #include <random>
 
+#include <atomic>
+
 #undef max
 
 const double bias = 0.00005;
@@ -23,6 +25,7 @@ Vector4 Scene::TraceRay(Ray ray, size_t bounceCount)
         IntersectionInformation info;
         if (shape->Intersect(ray, 0.00001, std::numeric_limits<double>::max(), info))
         {
+            //This should collide with everything and only repsond to the minimum hit object and cast a ray from there
             if (bounceCount > 0)
             {
                 Vector3 dir;
@@ -34,6 +37,7 @@ Vector4 Scene::TraceRay(Ray ray, size_t bounceCount)
                     break;
                 case MaterialType::reflective:
                     dir = Reflect(ray, info.m_normal);
+                    color = Vector4();
                     break;
                 case MaterialType::refractive:
                     dir = Refract(ray, info.m_normal, info.m_material.m_refractinIndex);

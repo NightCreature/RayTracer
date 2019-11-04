@@ -13,6 +13,8 @@
 #include <iostream>
 #include <sstream>
 
+std::atomic_size_t intersectionCount = 0;
+
 int main()
 {
     OutputDebugString("Read Scene and RenderSettings\n");
@@ -99,6 +101,7 @@ int main()
 
     std::stringstream str("");
     str << "Jobs done time elapsed on main: " << (timer.getTimeStamp() - timeStamp) / timer.getResolution() << "s\n";
+    str << "Number of Intersections: " << intersectionCount << "\n";
     str << "<<<<MAIN>>>>>\n";
     OutputDebugString(str.str().c_str());
 
