@@ -20,71 +20,87 @@ const double bias = 0.00005;
 ///-----------------------------------------------------------------------------
 Vector4 Scene::TraceRay(Ray ray, size_t bounceCount)
 {
+    IntersectionInformation info;
+    bool hit = false;
+    double lowestIntersectionTime = std::numeric_limits<double>::max();
     for (auto shape : m_shapes)
-    {
-        IntersectionInformation info;
-        if (shape->Intersect(ray, 0.00001, std::numeric_limits<double>::max(), info))
+    {        
+        double intersectionTime = std::numeric_limits<double>::max();
+        if (shape->Intersect(ray, intersectionTime))
         {
-            //This should collide with everything and only repsond to the minimum hit object and cast a ray from there
-            if (bounceCount > 0)
+            if (intersectionTime < lowestIntersectionTime)
             {
-                Vector3 dir;
-                Vector4 color = shape->m_material.m_diffuseColor;
-                switch (info.m_material.m_type)
-                {
-                case MaterialType::diffuse:
-                    dir = CreateRandomUnitVector();
-                    break;
-                case MaterialType::reflective:
-                    dir = Reflect(ray, info.m_normal);
-                    color = Vector4();
-                    break;
-                case MaterialType::refractive:
-                    dir = Refract(ray, info.m_normal, info.m_material.m_refractinIndex);
-                    break;
-                case MaterialType::fresnel:
-                {
-                    Vector4 reflectionColor;
-                    Vector4 refractionColor;
-                    double fresnelFactor;
-                    Fresnel(ray, info.m_normal, info.m_material.m_refractinIndex, fresnelFactor);
-                    bool outSide = ray.m_direction.dot(info.m_normal);
-                    if (fresnelFactor < 1)
-                    {
-                        Ray refractionRay;
-                        refractionRay.m_direction = Refract(ray, info.m_normal, info.m_material.m_refractinIndex);
-                        refractionRay.m_direction.normalize();
-                        refractionRay.m_origin = outSide ? info.m_hitPoint - bias : info.m_hitPoint + bias;
-                        refractionColor = TraceRay(refractionRay, bounceCount - 1);
-                    }
-
-                    Ray reflectionRay;
-                    reflectionRay.m_direction = Reflect(ray, info.m_normal);
-                    reflectionRay.m_direction.normalize();
-                    reflectionRay.m_origin = outSide ? info.m_hitPoint - bias : info.m_hitPoint + bias;
-                    reflectionColor = TraceRay(reflectionRay, bounceCount - 1);
-
-                    return reflectionColor * fresnelFactor + refractionColor * (1 - fresnelFactor);
-
-                }
-                    break;
-                default:
-                    break;
-                }
-
-
-                Ray bounceRay;
-                bounceRay.m_direction = dir;
-                bounceRay.m_direction.normalize();
-                bounceRay.m_origin = info.m_hitPoint + bias;
-                return color + TraceRay(bounceRay, bounceCount - 1);
+                lowestIntersectionTime = intersectionTime;
+                info.m_hitPoint = ray.PointAtT(intersectionTime);
+                info.m_material = shape->m_material;
+                info.m_normal = shape->GetNormalAt(info.m_hitPoint, intersectionTime);
+                hit = true;
             }
-
-            return shape->m_material.m_diffuseColor;
         }
     }
 
-    return Vector4(0, 0, 0, 1);
+    //This should collide with everything and only repsond to the minimum hit object and cast a ray from there
+    if (hit)
+    {
+        Vector4 color = info.m_material.m_diffuseColor;
+        if (bounceCount > 0)
+        {
+            Vector3 dir;
+            
+            switch (info.m_material.m_type)
+            {
+            case MaterialType::diffuse:
+                dir = CreateRandomUnitVector();
+                break;
+            case MaterialType::reflective:
+                dir = Reflect(ray, info.m_normal);
+                color = Vector4();
+                break;
+            case MaterialType::refractive: //This might not need only the closest intersection we might need to ignore the internal reflection
+                dir = Refract(ray, info.m_normal, info.m_material.m_refractinIndex);
+                break;
+            case MaterialType::fresnel: //This might not need only the closest intersection we might need to ignore the internal reflection or scale it down
+            {
+                Vector4 reflectionColor;
+                Vector4 refractionColor;
+                double fresnelFactor;
+                Fresnel(ray, info.m_normal, info.m_material.m_refractinIndex, fresnelFactor);
+                bool outSide = ray.m_direction.dot(info.m_normal);
+                if (fresnelFactor < 1)
+                {
+                    Ray refractionRay;
+                    refractionRay.m_direction = Refract(ray, info.m_normal, info.m_material.m_refractinIndex);
+                    refractionRay.m_direction.normalize();
+                    refractionRay.m_origin = outSide ? info.m_hitPoint - bias : info.m_hitPoint + bias;
+                    refractionColor = TraceRay(refractionRay, bounceCount - 1);
+                }
+
+                Ray reflectionRay;
+                reflectionRay.m_direction = Reflect(ray, info.m_normal);
+                reflectionRay.m_direction.normalize();
+                reflectionRay.m_origin = outSide ? info.m_hitPoint - bias : info.m_hitPoint + bias;
+                reflectionColor = TraceRay(reflectionRay, bounceCount - 1);
+
+                return reflectionColor * fresnelFactor + refractionColor * (1 - fresnelFactor);
+
+            }
+            break;
+            default:
+                break;
+            }
+
+
+            Ray bounceRay;
+            bounceRay.m_direction = dir;
+            bounceRay.m_direction.normalize();
+            bounceRay.m_origin = info.m_hitPoint + bias;
+            return color + TraceRay(bounceRay, bounceCount - 1);
+        }
+
+        return color;
+    }
+
+    return Vector4(0.25, 0.25, 0.25, 1);
 }
 
 ///-----------------------------------------------------------------------------
