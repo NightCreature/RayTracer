@@ -25,6 +25,7 @@ void RenderOptions::Deserialise(const std::filesystem::path& settingsFilePath)
                 m_numberOfBounces = xmlElement->UnsignedAttribute("noBounces");
                 m_numberOfWorkerThreads = xmlElement->UnsignedAttribute("numberOfWorkerThreads");
                 m_numberOfTasks = xmlElement->UnsignedAttribute("numberOfTasks");
+                m_outputFileName = xmlElement->Attribute("outputFile");
             }
         }
     }

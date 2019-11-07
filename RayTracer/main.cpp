@@ -108,7 +108,7 @@ int main()
     OutputDebugString("Start Saving Image\n");
     //Save output image
     auto path = std::filesystem::current_path();
-    auto fileName = path / "output.bmp";
+    auto fileName = path / renderOptions.m_outputFileName;
     OutputDebugString("Saving To: ");
     OutputDebugString(fileName.string().c_str());
     OutputDebugString("\n");

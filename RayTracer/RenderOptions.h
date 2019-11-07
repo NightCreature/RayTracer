@@ -5,6 +5,7 @@
 
 #include <cmath>
 #include <filesystem>
+#include <string>
 
 struct RenderOptions
 {
@@ -16,6 +17,8 @@ struct RenderOptions
     {}
 
     void Deserialise(const std::filesystem::path& settingsFilePath);
+
+    std::string m_outputFileName;
 
     Camera m_cam;
     Matrix44 m_projectionMatrix;
