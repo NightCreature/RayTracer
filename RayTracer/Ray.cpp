@@ -16,8 +16,8 @@ void Ray::CreateRay(const RenderOptions& options, size_t x, size_t y)
     auto WindowRight = options.m_tanFov;
     auto WindowTop = options.m_tanFov;
 
-    auto randomX = options.m_usePathTracing ? dis(gen) : 0.5;
-    auto randomY = options.m_usePathTracing ? dis(gen) : 0.5;
+    auto randomX = options.m_numberOfSamples > 1 ? dis(gen) : 0.5;
+    auto randomY = options.m_numberOfSamples > 1 ? dis(gen) : 0.5;
     
     auto xPixel = (x + randomX) / options.m_outputWidth;
     auto yPixel = (y + randomY) / options.m_outputHeight;
