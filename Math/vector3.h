@@ -12,6 +12,7 @@ public:
     Vector3(double x, double y, double z);
     Vector3(const double xyz[]);
     explicit Vector3(const Vector2& vec) : m_x(vec.x()), m_y(vec.y()), m_z(0.0f) {}
+    //Vector3(const Vector3& in) : m_x(in.x()), m_y(in.y()), m_z(in.z()) {}
     ~Vector3() {}
 
     void cross (Vector3 &out, const Vector3& v);
@@ -115,6 +116,20 @@ inline Vector3 operator/ (double lhs, const Vector3& rhs)
 inline void cross (Vector3& out, const Vector3& v1 ,const Vector3& v2)
 {
     out = Vector3(v1.y()*v2.z() - v1.z()*v2.y(), v1.z()*v2.x() - v1.x()*v2.z(), v1.x()*v2.y() - v1.y()*v2.x());
+}
+
+inline Vector3 cross(const Vector3& v1, const Vector3& v2)
+{
+    Vector3 retVal;
+    cross(retVal, v1, v2);
+    return retVal;
+}
+
+inline Vector3 normalise(const Vector3& vin)
+{
+    Vector3 v(vin);
+    v.normalize();
+    return v;
 }
 
 inline Vector3 faceNormal (const Vector3& tobenormalled, const Vector3& v1 ,const Vector3& v2)
