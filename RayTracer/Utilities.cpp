@@ -1,6 +1,7 @@
 #include "Utilities.h"
 
 #include "Math/MathUtilityFunctions.h"
+#include "Math/matrix33.h"
 #include "Math/vector3.h"
 #include "Ray.h"
 
@@ -92,6 +93,36 @@ Vector3 CreateRandomUnitVector()
     }
 
     return dir;
+}
+
+Matrix33 GetTangentSpace(Vector3 normal)
+{
+    // Choose a helper vector for the cross product
+    Vector3 helper = Vector3(1, 0, 0);
+    if (abs(normal.x()) > 0.99)
+        helper = Vector3(0, 0, 1);
+    // Generate vectors
+    Vector3 tangent = cross(normal, helper);
+    tangent.normalize();
+    Vector3 binormal = cross(normal, tangent);
+    binormal.normalize();
+    return Matrix33(tangent, binormal, normal);
+}
+
+///-----------------------------------------------------------------------------
+///! @brief 
+///! @remark
+///-----------------------------------------------------------------------------
+Vector3 CreateHemiSphereRandomVector(const Vector3& normal)
+{
+    // Uniformly sample hemisphere direction
+    double cosTheta = sdis(sgen);
+    double sinTheta = sqrt(std::max(0.0, 1.0 - cosTheta * cosTheta));
+    double phi = 2 * math::gmPI * sdis(sgen);
+    Vector3 tangentSpaceDir = Vector3(cos(phi) * sinTheta, sin(phi) * sinTheta, cosTheta);
+    // Transform direction to world space
+    auto tangentSpace = GetTangentSpace(normal);
+    return multiply(tangentSpaceDir, tangentSpace);
 }
 
 ///-----------------------------------------------------------------------------
