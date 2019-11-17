@@ -100,7 +100,17 @@ int main()
     jobSystem.WaitfForJobsToFinish();
 
     std::stringstream str("");
-    str << "Jobs done time elapsed on main: " << (timer.getTimeStamp() - timeStamp) / timer.getResolution() << "s\n";
+    auto timeSpentDouble = 0.0;
+    auto lessThenSeconds = modf((timer.getTimeStamp() - timeStamp) / timer.getResolution(), &timeSpentDouble);
+    lessThenSeconds *= 10000000000;
+    auto timeSpent = static_cast<size_t>(timeSpentDouble);
+    auto seconds = timeSpent % 60;
+    timeSpent /= 60;
+    auto minutes = timeSpent % 60;
+    timeSpent /= 60;
+    auto hours = timeSpent % 24;
+    auto days = timeSpent / 24;
+    str << "Jobs done time elapsed on main: " <<days << " days " << hours << ":" << minutes << ":" << seconds << "." << static_cast<size_t>(lessThenSeconds) << "\n";
     str << "Number of Intersections: " << intersectionCount << "\n";
     str << "<<<<MAIN>>>>>\n";
     OutputDebugString(str.str().c_str());
@@ -108,7 +118,10 @@ int main()
     OutputDebugString("Start Saving Image\n");
     //Save output image
     auto path = std::filesystem::current_path();
-    auto fileName = path / renderOptions.m_outputFileName;
+
+    std::stringstream converter;
+    converter << "Samples " << renderOptions.m_numberOfSamples << " Bounces " << renderOptions.m_numberOfBounces << " Objects " << scene.m_shapes.size() << " " << renderOptions.m_outputFileName;
+    auto fileName = path / "Images" / converter.str();
     OutputDebugString("Saving To: ");
     OutputDebugString(fileName.string().c_str());
     OutputDebugString("\n");
