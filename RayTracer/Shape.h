@@ -11,6 +11,9 @@ public:
     virtual bool Intersect(const Ray& ray, double& intersectionTime) = 0;
     virtual Vector3 GetNormalAt(const Vector3& m_hitPoint, double intersectionTime) = 0;
 
+    virtual size_t GetShapeType() = 0;
+    virtual bool IsLight() const { return false; }
+
     Material m_material;
 };
 
@@ -24,8 +27,15 @@ public:
     virtual bool Intersect(const Ray& ray, double& intersectionTime) override;
     virtual Vector3 GetNormalAt(const Vector3& m_hitPoint, double intersectionTime) override
     {
-        return (m_hitPoint - m_position) / m_radius;
+        auto normal = m_hitPoint - m_position;
+        normal.normalize();
+        return -normal;
     }
+
+    virtual bool IsLight() const override { return m_isLight; }
+
+    virtual size_t GetShapeType() override { return 0; }
+    bool m_isLight = false;
 };
 
 class Triangle : public Shape
@@ -42,6 +52,8 @@ public:
     {
         return m_normal;
     }
+
+    virtual size_t GetShapeType() override { return 1; }
 };
 
 class Square : public Shape
@@ -52,6 +64,8 @@ public:
     {
         return m_normal;
     }
+
+    virtual size_t GetShapeType() override { return 2; }
 
     Vector3 m_position;
     Vector3 m_normal;
