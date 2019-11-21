@@ -9,22 +9,25 @@
 #include <random>
 
 #include <atomic>
+#include "BRDF/BRDF.h"
 
 #undef max
 
-const double bias = 0.00005;
+const double bias = 0.000005;
 
 ///-----------------------------------------------------------------------------
 ///! @brief 
 ///! @remark
 ///-----------------------------------------------------------------------------
-Vector4 Scene::TraceRay(Ray ray, size_t bounceCount)
+Vector4 Scene::TraceRay(Ray ray, size_t bounceCount) const
 {
     IntersectionInformation info;
     bool hit = false;
+    bool hitLight = false;
     double lowestIntersectionTime = std::numeric_limits<double>::max();
+    Shape* shapeHit = nullptr;
     for (auto shape : m_shapes)
-    {        
+    {
         double intersectionTime = std::numeric_limits<double>::max();
         if (shape->Intersect(ray, intersectionTime))
         {
@@ -34,7 +37,10 @@ Vector4 Scene::TraceRay(Ray ray, size_t bounceCount)
                 info.m_hitPoint = ray.PointAtT(intersectionTime);
                 info.m_material = shape->m_material;
                 info.m_normal = shape->GetNormalAt(info.m_hitPoint, intersectionTime);
+                info.m_objectHit = shape;
                 hit = true;
+                hitLight = shape->IsLight();
+
             }
         }
     }
@@ -42,64 +48,10 @@ Vector4 Scene::TraceRay(Ray ray, size_t bounceCount)
     //This should collide with everything and only repsond to the minimum hit object and cast a ray from there
     if (hit)
     {
-        Vector4 color = info.m_material.m_diffuseColor;
-        if (bounceCount > 0)
-        {
-            Vector3 dir;
-            
-            switch (info.m_material.m_type)
-            {
-            case MaterialType::diffuse:
-                dir = CreateRandomUnitVector();
-                break;
-            case MaterialType::reflective:
-                dir = Reflect(ray, info.m_normal);
-                color = Vector4();
-                break;
-            case MaterialType::refractive: //This might not need only the closest intersection we might need to ignore the internal reflection
-                dir = Refract(ray, info.m_normal, info.m_material.m_refractinIndex);
-                break;
-            case MaterialType::fresnel: //This might not need only the closest intersection we might need to ignore the internal reflection or scale it down
-            {
-                Vector4 reflectionColor;
-                Vector4 refractionColor;
-                double fresnelFactor;
-                Fresnel(ray, info.m_normal, info.m_material.m_refractinIndex, fresnelFactor);
-                bool outSide = ray.m_direction.dot(info.m_normal);
-                if (fresnelFactor < 1)
-                {
-                    Ray refractionRay;
-                    refractionRay.m_direction = Refract(ray, info.m_normal, info.m_material.m_refractinIndex);
-                    refractionRay.m_direction.normalize();
-                    refractionRay.m_origin = outSide ? info.m_hitPoint - bias : info.m_hitPoint + bias;
-                    refractionColor = TraceRay(refractionRay, bounceCount - 1);
-                }
-
-                Ray reflectionRay;
-                reflectionRay.m_direction = Reflect(ray, info.m_normal);
-                reflectionRay.m_direction.normalize();
-                reflectionRay.m_origin = outSide ? info.m_hitPoint - bias : info.m_hitPoint + bias;
-                reflectionColor = TraceRay(reflectionRay, bounceCount - 1);
-
-                return reflectionColor * fresnelFactor + refractionColor * (1 - fresnelFactor);
-
-            }
-            break;
-            default:
-                break;
-            }
-
-
-            Ray bounceRay;
-            bounceRay.m_direction = dir;
-            bounceRay.m_direction.normalize();
-            bounceRay.m_origin = info.m_hitPoint + bias;
-            return color + TraceRay(bounceRay, bounceCount - 1);
-        }
-
-        return color;
+        return info.m_material.Shade(info, ray, *this, bounceCount);
     }
 
+    //We hit nothing here so return an environment color
     return Vector4(0.25, 0.25, 0.25, 1);
 }
 
@@ -122,9 +74,8 @@ void Scene::DeserialiseScene(const std::filesystem::path& file)
                 Sphere sphere;
                 sphere.m_position = Vector3(xmlElement->DoubleAttribute("x"), xmlElement->DoubleAttribute("y"), xmlElement->DoubleAttribute("z"));
                 sphere.m_radius = xmlElement->DoubleAttribute("radius");
-                sphere.m_material.m_diffuseColor = Vector4(xmlElement->DoubleAttribute("r"), xmlElement->DoubleAttribute("g"), xmlElement->DoubleAttribute("b"), xmlElement->DoubleAttribute("a"));
-                sphere.m_material.m_type = static_cast<MaterialType>(xmlElement->UnsignedAttribute("materialType"));
-                sphere.m_material.m_refractinIndex = xmlElement->DoubleAttribute("refractionIndex");
+                sphere.m_isLight = xmlElement->BoolAttribute("isLight");
+                sphere.m_material = ReadMaterialInfo(xmlElement);
 
                 m_spheres.push_back(sphere);
             }
@@ -135,9 +86,7 @@ void Scene::DeserialiseScene(const std::filesystem::path& file)
                 square.m_normal = Vector3(xmlElement->DoubleAttribute("nx"), xmlElement->DoubleAttribute("ny"), xmlElement->DoubleAttribute("nz"));
                 square.m_normal.normalize();
                 square.m_size = Vector2(xmlElement->DoubleAttribute("width"), xmlElement->DoubleAttribute("height"));
-                square.m_material.m_diffuseColor = Vector4(xmlElement->DoubleAttribute("r"), xmlElement->DoubleAttribute("g"), xmlElement->DoubleAttribute("b"), xmlElement->DoubleAttribute("a"));
-                square.m_material.m_type = static_cast<MaterialType>(xmlElement->UnsignedAttribute("materialType"));
-                square.m_material.m_refractinIndex = xmlElement->DoubleAttribute("refractionIndex");
+                square.m_material = ReadMaterialInfo(xmlElement);
 
                 m_squares.push_back(square);
             }
@@ -147,12 +96,16 @@ void Scene::DeserialiseScene(const std::filesystem::path& file)
                 triangle.m_point1 = Vector3(xmlElement->DoubleAttribute("vx0"), xmlElement->DoubleAttribute("vy0"), xmlElement->DoubleAttribute("vz0"));
                 triangle.m_point2 = Vector3(xmlElement->DoubleAttribute("vx1"), xmlElement->DoubleAttribute("vy1"), xmlElement->DoubleAttribute("vz1"));
                 triangle.m_point3 = Vector3(xmlElement->DoubleAttribute("vx2"), xmlElement->DoubleAttribute("vy2"), xmlElement->DoubleAttribute("vz2"));
+
+                auto v1 = triangle.m_point2 - triangle.m_point1;
+                auto v2 = triangle.m_point3 - triangle.m_point1;
+                auto normal = cross(v1, v2);
+                normal.normalize();
+                triangle.m_normal = normal;
                 triangle.m_normal = Vector3(xmlElement->DoubleAttribute("nx"), xmlElement->DoubleAttribute("ny"), xmlElement->DoubleAttribute("nz"));
                 triangle.m_normal.normalize();
-                triangle.m_material.m_diffuseColor = Vector4(xmlElement->DoubleAttribute("r"), xmlElement->DoubleAttribute("g"), xmlElement->DoubleAttribute("b"), xmlElement->DoubleAttribute("a"));
-                triangle.m_material.m_type = static_cast<MaterialType>(xmlElement->UnsignedAttribute("materialType"));
-                triangle.m_material.m_refractinIndex = xmlElement->DoubleAttribute("refractionIndex");
-                
+                triangle.m_material = ReadMaterialInfo(xmlElement);
+
                 m_triangles.push_back(triangle);
             }
         }
@@ -172,4 +125,18 @@ void Scene::DeserialiseScene(const std::filesystem::path& file)
     {
         m_shapes.push_back(&triangle);
     }
+}
+
+///-----------------------------------------------------------------------------
+///! @brief 
+///! @remark
+///-----------------------------------------------------------------------------
+Material Scene::ReadMaterialInfo(tinyxml2::XMLElement* xmlElement)
+{
+    auto diffuseColor = Vector4(xmlElement->DoubleAttribute("r"), xmlElement->DoubleAttribute("g"), xmlElement->DoubleAttribute("b"), xmlElement->DoubleAttribute("a"));
+    auto type = static_cast<MaterialType>(xmlElement->UnsignedAttribute("materialType"));
+    auto refractionIndex = xmlElement->DoubleAttribute("refractionIndex");
+    Material material(diffuseColor, diffuseColor, diffuseColor, refractionIndex, type);
+    material.AddBRDF(new LambertianBRDF(diffuseColor));
+    return material;
 }
