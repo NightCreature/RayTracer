@@ -2,6 +2,7 @@
 
 #include "RenderOptions.h"
 #include "Scene.h"
+#include "Utilities.h"
 
 ///-----------------------------------------------------------------------------
 ///! @brief 
@@ -62,7 +63,7 @@ void PixelBlockJob::Execute(size_t threadIndex)
     //{
     //    str << "Single ray took: " << interval / m_timer.getResolution() << "s"  << "\n";
     //}
-    str << "Finished PixelJob on Thread " << threadIndex << " in: " << (end - now) / m_timer.getResolution() << "s\n";
+    str << "Finished PixelJob on Thread " << threadIndex << " in: " << ConvertTimeDurationToString((end - now) / m_timer.getResolution()).c_str() << "s\n";
     str << "<<<<<" << threadIndex << ">>>>>\n";
     OutputDebugString(str.str().c_str());
 }

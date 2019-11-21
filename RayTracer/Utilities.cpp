@@ -194,3 +194,24 @@ void Fresnel(const Ray& ray, const Vector3& normal, double refractionIndex, doub
     // As a consequence of the conservation of energy, transmittance is given by:
     // kt = 1 - kr;
 }
+
+///-----------------------------------------------------------------------------
+///! @brief 
+///! @remark
+///-----------------------------------------------------------------------------
+std::string ConvertTimeDurationToString(double timerDuration)
+{
+    std::stringstream str("");
+    auto timeSpentDouble = 0.0;
+    auto lessThenSeconds = modf(timerDuration, &timeSpentDouble);
+    lessThenSeconds *= 10000000000;
+    auto timeSpent = static_cast<size_t>(timeSpentDouble);
+    auto seconds = timeSpent % 60;
+    timeSpent /= 60;
+    auto minutes = timeSpent % 60;
+    timeSpent /= 60;
+    auto hours = timeSpent % 24;
+    auto days = timeSpent / 24;
+    str << days << " days and " << hours << ":" << minutes << ":" << seconds << "." << static_cast<size_t>(lessThenSeconds) << "\n";
+    return str.str();
+}

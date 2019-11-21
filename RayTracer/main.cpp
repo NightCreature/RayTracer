@@ -9,7 +9,6 @@
 
 #include <array>
 #include <atomic>
-#include <chrono>
 #include <filesystem>
 #include <iostream>
 #include <sstream>
@@ -97,30 +96,13 @@ int main()
     PerformanceTimer timer;
     timer.update();
     size_t timeStamp = timer.getTimeStamp();
-    std::chrono::high_resolution_clock performanceClock;
-    auto start = performanceClock.now();
 
     jobSystem.WaitfForJobsToFinish();
 
     auto timerDuration = (timer.getTimeStamp() - timeStamp) / timer.getResolution();
-    auto end = performanceClock.now();
-    std::chrono::duration<double> duration = end - start;
 
     std::stringstream str("");
-    auto timeSpentDouble = 0.0;
-    auto lessThenSeconds = modf(timerDuration, &timeSpentDouble);
-    lessThenSeconds *= 10000000000;
-    auto timeSpent = static_cast<size_t>(timeSpentDouble);
-    auto seconds = timeSpent % 60;
-    timeSpent /= 60;
-    auto minutes = timeSpent % 60;
-    timeSpent /= 60;
-    auto hours = timeSpent % 24;
-    auto days = timeSpent / 24;
-    str << "Jobs done time elapsed on main: " <<days << " days " << hours << ":" << minutes << ":" << seconds << "." << static_cast<size_t>(lessThenSeconds) << "\n";
-    str << "Chrono elpased time: " << std::chrono::duration_cast<std::chrono::seconds>(duration).count() << "\n";
-    str << "Chrono elpased time: " << duration.count() << "\n";
-    str << "Number of Intersections: " << intersectionCount << "\n";
+    str << "Jobs done time elapsed on main: " << ConvertTimeDurationToString(timerDuration).c_str() << "\n";
     str << "<<<<MAIN>>>>>\n";
     OutputDebugString(str.str().c_str());
 
