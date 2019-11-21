@@ -119,12 +119,12 @@ CreatedModel LoadModel(const Material& material, const std::string& fileName)
         Material shaderMaterial;// = meshGroupParams.m_shaderInstance.getMaterial();
         aiColor4D color;
         aimaterial->Get(AI_MATKEY_COLOR_DIFFUSE, color);
-        shaderMaterial.m_diffuseColor = Vector4(color.r, color.g, color.b, color.a);
+        shaderMaterial.SetDiffuseColor( Vector4(color.r, color.g, color.b, color.a) );
         
         float refractionIndex = 0.0f;
         aimaterial->Get(AI_MATKEY_REFRACTI, refractionIndex);
-        shaderMaterial.m_refractinIndex = refractionIndex;
-        shaderMaterial.m_type = refractionIndex > 0 ? MaterialType::refractive : MaterialType::diffuse;
+        shaderMaterial.SetRefractionIndex( refractionIndex);
+        shaderMaterial.SetType( refractionIndex > 0 ? MaterialType::refractive : MaterialType::diffuse);
         
         
 

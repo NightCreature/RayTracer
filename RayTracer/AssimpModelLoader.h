@@ -4,7 +4,7 @@
 
 #include <string>
 
-struct Material;
+class Material;
 
 namespace AssimpModelLoader 
 {
