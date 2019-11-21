@@ -32,7 +32,7 @@ void Ray::CreateRay(const RenderOptions& options, size_t x, size_t y)
     m_direction = m_origin - options.m_cam.getEye();
     m_direction.normalize();*/
 
-    m_origin = Vector3(0, 0, -25);
+    m_origin = Vector3(0, 0, -99);
     m_direction = Vector3(u, v, 1);
 
     //Matrix44 cameraMatrix = options.m_cam.getCamera();

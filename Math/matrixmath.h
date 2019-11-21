@@ -11,7 +11,7 @@
 
 namespace math
 {
-	const double gmPI = 3.14159265f;
+	const double gmPI = 3.14159265;
 	double toRadian(double degree);
 	double toDegree(double radian);
 	template <class T>
@@ -22,12 +22,12 @@ namespace math
 
     inline Matrix44 createLeftHandedFOVPerspectiveMatrix(double fieldOfViewY, double aspectRatio, double znearPlane, double zfarPlane)
     {
-        double height = 1.0f / tan(fieldOfViewY/2);
+        double height = 1.0 / tan(fieldOfViewY/2);
         double width =  height / aspectRatio;
-        return Matrix44(width, 0.0f, 0.0f, 0.0f,
-                        0.0f,  height, 0.0f, 0.0f,
-                        0.0f, 0.0f, zfarPlane/(zfarPlane-znearPlane), 1.0f,
-                        0.0f, 0.0f, -znearPlane*zfarPlane/(zfarPlane-znearPlane), 0.0f);
+        return Matrix44(width, 0.0, 0.0, 0.0,
+                        0.0,  height, 0.0, 0.0,
+                        0.0, 0.0, zfarPlane/(zfarPlane-znearPlane), 1.0,
+                        0.0, 0.0, -znearPlane*zfarPlane/(zfarPlane-znearPlane), 0.0);
     }
 
 	inline Matrix44 createOrthoGraphicProjection(double width, double height, double zNear, double zFar)

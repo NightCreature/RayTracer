@@ -9,6 +9,7 @@
 
 #include <array>
 #include <atomic>
+#include <chrono>
 #include <filesystem>
 #include <iostream>
 #include <sstream>
@@ -96,12 +97,18 @@ int main()
     PerformanceTimer timer;
     timer.update();
     size_t timeStamp = timer.getTimeStamp();
+    std::chrono::high_resolution_clock performanceClock;
+    auto start = performanceClock.now();
 
     jobSystem.WaitfForJobsToFinish();
 
+    auto timerDuration = (timer.getTimeStamp() - timeStamp) / timer.getResolution();
+    auto end = performanceClock.now();
+    std::chrono::duration<double> duration = end - start;
+
     std::stringstream str("");
     auto timeSpentDouble = 0.0;
-    auto lessThenSeconds = modf((timer.getTimeStamp() - timeStamp) / timer.getResolution(), &timeSpentDouble);
+    auto lessThenSeconds = modf(timerDuration, &timeSpentDouble);
     lessThenSeconds *= 10000000000;
     auto timeSpent = static_cast<size_t>(timeSpentDouble);
     auto seconds = timeSpent % 60;
@@ -111,6 +118,8 @@ int main()
     auto hours = timeSpent % 24;
     auto days = timeSpent / 24;
     str << "Jobs done time elapsed on main: " <<days << " days " << hours << ":" << minutes << ":" << seconds << "." << static_cast<size_t>(lessThenSeconds) << "\n";
+    str << "Chrono elpased time: " << std::chrono::duration_cast<std::chrono::seconds>(duration).count() << "\n";
+    str << "Chrono elpased time: " << duration.count() << "\n";
     str << "Number of Intersections: " << intersectionCount << "\n";
     str << "<<<<MAIN>>>>>\n";
     OutputDebugString(str.str().c_str());
@@ -120,7 +129,7 @@ int main()
     auto path = std::filesystem::current_path();
 
     std::stringstream converter;
-    converter << "Samples " << renderOptions.m_numberOfSamples << " Bounces " << renderOptions.m_numberOfBounces << " Objects " << scene.m_shapes.size() << " " << renderOptions.m_outputFileName;
+    converter << "Samples " << renderOptions.m_numberOfSamples << " Bounces " << renderOptions.m_numberOfBounces << " Objects " << scene.m_shapes.size() << " " << renderOptions.m_outputWidth << "x" << renderOptions.m_outputHeight << "" << renderOptions.m_outputFileName;
     auto fileName = path / "Images" / converter.str();
     OutputDebugString("Saving To: ");
     OutputDebugString(fileName.string().c_str());

@@ -138,10 +138,19 @@ inline Matrix33 operator-(Matrix33 m)
 //line vector * 3x3 matrix
 inline Vector3 multiply(const Vector3& v, Matrix33& m)
 {//Check implementation
-	return Vector3(
-		v.x()*m[0][0]+v.y()*m[1][0]+v.z()*m[2][0],
-		v.x()*m[0][1]+v.y()*m[1][1]+v.z()*m[2][1],
-		v.x()*m[0][2]+v.y()*m[1][2]+v.z()*m[2][2]);
+    return Vector3(
+        v.x() * m[0][0] + v.y() * m[1][0] + v.z() * m[2][0],
+        v.x() * m[0][1] + v.y() * m[1][1] + v.z() * m[2][1],
+        v.x() * m[0][2] + v.y() * m[1][2] + v.z() * m[2][2]);
+}
+
+//line vector * 3x3 matrix
+inline Vector3 multiplyV(const Vector3& v, Matrix33& m)
+{//Check implementation
+    return Vector3(
+        v.x() * m[0][0] + v.y() * m[1][0] + v.z() * m[2][0],
+        v.x() * m[0][1] + v.y() * m[1][1] + v.z() * m[2][1],
+        v.x() * m[0][2] + v.y() * m[1][2] + v.z() * m[2][2]);
 }
 
 inline Vector3 operator* (const Vector3& v, Matrix33& m)
