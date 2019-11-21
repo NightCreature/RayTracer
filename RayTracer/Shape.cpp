@@ -14,7 +14,7 @@ bool solveQuadratic(const double& a, const double& b, const double& c, double& x
     }
     else
     {
-        float q = (b > 0) ?
+        double q = (b > 0) ?
             -0.5 * (b + sqrt(discr)) :
             -0.5 * (b - sqrt(discr));
         x0 = q / a;

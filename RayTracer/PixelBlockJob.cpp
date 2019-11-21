@@ -32,12 +32,13 @@ void PixelBlockJob::Execute(size_t threadIndex)
         for (size_t x = 0; x < width; ++x)
         {
             Vector4 colorAccumulator;
+
             //pixelTime[y * width + x] = m_timer.getTimeStamp();
             for (size_t sampleCount = 0; sampleCount < noSamples; ++sampleCount)
             {
+
                 Ray ray;
                 ray.CreateRay(*(m_params.m_renderOptions), x, y + m_params.m_startIndex);
-
                 //send ray into scene
                 colorAccumulator += m_params.m_scene->TraceRay(ray, m_params.m_renderOptions->m_numberOfBounces);
             }
