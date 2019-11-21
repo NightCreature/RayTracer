@@ -41,7 +41,7 @@ Vector4 Material::Shade(const IntersectionInformation& hitInfo, const Ray& ray, 
     wo.normalize(); //This should be the inverse of the ray
         
     SampleBRDF(color, hitInfo, wo, scene, bounce, BRDFReflectionType::Diffuse);
-    //SampleBRDF(color, hitInfo, wo, scene, bounce, BRDFReflectionType::Specular);
+    SampleBRDF(color, hitInfo, wo, scene, bounce, BRDFReflectionType::Specular);
 
     return color;
 }

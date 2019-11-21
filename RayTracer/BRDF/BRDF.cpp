@@ -95,6 +95,7 @@ LambertianBRDF::LambertianBRDF(const Vector4& color)
 {
     m_color = color;
     m_weightedColor = color / math::gmPI;
+    m_type = BRDFReflectionType::Diffuse;
 }
 
 ///-----------------------------------------------------------------------------
