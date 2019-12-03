@@ -12,6 +12,6 @@ struct IntersectionInformation
     Vector3 m_hitPoint;
     Vector3 m_normal;
     double m_hitTimeAlongRay;
-    Shape* m_objectHit;
+    Shape* m_objectHit = nullptr;
 };
 

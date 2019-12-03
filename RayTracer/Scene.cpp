@@ -76,7 +76,7 @@ void Scene::DeserialiseScene(const std::filesystem::path& file)
                 sphere.m_radius = xmlElement->DoubleAttribute("radius");
                 sphere.m_isLight = xmlElement->BoolAttribute("isLight");
                 sphere.m_material = ReadMaterialInfo(xmlElement);
-
+                sphere.m_center = sphere.m_position;
                 m_spheres.push_back(sphere);
             }
             else if (elementName == "Square")
@@ -87,6 +87,7 @@ void Scene::DeserialiseScene(const std::filesystem::path& file)
                 square.m_normal.normalize();
                 square.m_size = Vector2(xmlElement->DoubleAttribute("width"), xmlElement->DoubleAttribute("height"));
                 square.m_material = ReadMaterialInfo(xmlElement);
+                square.m_center = square.m_position;
 
                 m_squares.push_back(square);
             }
@@ -96,6 +97,8 @@ void Scene::DeserialiseScene(const std::filesystem::path& file)
                 triangle.m_point1 = Vector3(xmlElement->DoubleAttribute("vx0"), xmlElement->DoubleAttribute("vy0"), xmlElement->DoubleAttribute("vz0"));
                 triangle.m_point2 = Vector3(xmlElement->DoubleAttribute("vx1"), xmlElement->DoubleAttribute("vy1"), xmlElement->DoubleAttribute("vz1"));
                 triangle.m_point3 = Vector3(xmlElement->DoubleAttribute("vx2"), xmlElement->DoubleAttribute("vy2"), xmlElement->DoubleAttribute("vz2"));
+
+                triangle.m_center = (triangle.m_point1 + triangle.m_point2 + triangle.m_point3) / 3;
 
                 auto v1 = triangle.m_point2 - triangle.m_point1;
                 auto v2 = triangle.m_point3 - triangle.m_point1;
@@ -114,6 +117,10 @@ void Scene::DeserialiseScene(const std::filesystem::path& file)
     for (auto& sphere : m_spheres)
     {
         m_shapes.push_back(&sphere);
+        if (sphere.m_isLight)
+        {
+            m_lights.push_back(&sphere);
+        }
     }
 
     for (auto& square : m_squares)

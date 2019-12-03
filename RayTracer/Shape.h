@@ -15,6 +15,8 @@ public:
     virtual bool IsLight() const { return false; }
 
     Material m_material;
+
+    Vector3 m_center;
 };
 
 class Sphere : public Shape

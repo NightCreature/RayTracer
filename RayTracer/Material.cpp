@@ -3,6 +3,11 @@
 #include "Ray.h"
 #include "Scene.h"
 #include "BRDF/BRDF.h"
+#include "Math/vector4.h"
+
+#include <windows.h>
+
+#undef max
 
 const double bias = 0.000005;
 
@@ -39,7 +44,42 @@ Vector4 Material::Shade(const IntersectionInformation& hitInfo, const Ray& ray, 
 
     Vector3 wo = ray.m_origin - hitInfo.m_hitPoint;
     wo.normalize(); //This should be the inverse of the ray
-        
+
+    //Can we hit a light directly in the scene, if yes complete the path instantly
+    IntersectionInformation info;
+    auto offsetBias = hitInfo.m_normal * bias;
+    Ray lightRay;
+    lightRay.m_origin = hitInfo.m_hitPoint - offsetBias;
+    double lowestIntersectionTime = std::numeric_limits<double>::max();
+    for (auto shape : scene.m_shapes)
+    {
+        lightRay.m_direction = shape->m_center - hitInfo.m_hitPoint;
+        lightRay.m_direction.normalize();
+        double intersectionTime = std::numeric_limits<double>::max();
+        if (shape->Intersect(lightRay, intersectionTime))
+        {
+            if (intersectionTime < lowestIntersectionTime)
+            {
+                lowestIntersectionTime = intersectionTime;
+                info.m_hitPoint = ray.PointAtT(intersectionTime);
+                info.m_material = shape->m_material;
+                info.m_normal = shape->GetNormalAt(info.m_hitPoint, intersectionTime);
+                info.m_objectHit = shape;
+            }
+        }
+    }
+
+    if (info.m_objectHit != nullptr && info.m_objectHit->IsLight())
+    {
+        Vector3 wi;
+        //Get the diffuse color bounce from this object and modulate with the light color
+        auto diffuseBrdf = GetBRDF(BRDFReflectionType::Diffuse);
+        auto diffuseColor = diffuseBrdf != nullptr ? diffuseBrdf->sample(wi, wo, hitInfo) : Vector4();
+        auto specularBrdf = GetBRDF(BRDFReflectionType::Specular);
+        auto specularColor = specularBrdf != nullptr ? specularBrdf->sample(wi, wo, hitInfo) : Vector4();
+        return (info.m_objectHit->m_material.m_emissiveColor * diffuseColor) + specularColor;
+    }
+
     SampleBRDF(color, hitInfo, wo, scene, bounce, BRDFReflectionType::Diffuse);
     SampleBRDF(color, hitInfo, wo, scene, bounce, BRDFReflectionType::Specular);
 

@@ -17,6 +17,8 @@ struct Scene
     std::vector<Square> m_squares;
     std::vector<Triangle> m_triangles;
 
+    std::vector<Shape*> m_lights;
+
     Vector4 TraceRay(Ray ray, size_t bounceCount) const;
 
     void DeserialiseScene(const std::filesystem::path& file);
